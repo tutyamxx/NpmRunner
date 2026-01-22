@@ -18,6 +18,14 @@ const Runner = ({ pkg, initialCode }) => {
     const [warnings, setWarnings] = useState([]);
     const [code, setCode] = useState(initialCode ?? `import mod from '${defaultPkg}';\nconsole.log(mod);`);
 
+    const [theme, setTheme] = useState('dark');
+    const toggleTheme = () => setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
+
+    useEffect(() => {
+        document.body.className = theme;
+        localStorage.setItem('theme', theme);
+    }, [theme]);
+
     // --| Update code if initialCode changes and is different
     useEffect(() => {
         if (initialCode && initialCode !== code) {
@@ -66,7 +74,7 @@ const Runner = ({ pkg, initialCode }) => {
         // --| Create dynamic import scripts
         const scripts = imports.map(({ packageName, specifier }) => `
             <script type="module">
-                import * as module from 'https://esm.run/${packageName ?? ''}';
+                import * as module from 'https://esm.sh/${packageName ?? ''}';
                 window.${specifier ?? ''} = module?.default ?? module;
             </script>
         `).join('');
@@ -95,6 +103,16 @@ const Runner = ({ pkg, initialCode }) => {
         `;
     };
 
+    /**
+     * Clear the editor content
+     */
+    const clearEditor = () => setCode('');
+
+    /**
+     * Clear the console logs
+     */
+    const clearConsole = () => setLogs([]);
+
     return (
         <div className="runner-container">
 
@@ -103,7 +121,7 @@ const Runner = ({ pkg, initialCode }) => {
                 <Editor
                     height="100%"
                     language="javascript"
-                    theme="vs-dark"
+                    theme={theme === 'dark' ? 'vs-dark' : 'light'}
                     value={code ?? ''}
                     onChange={(value) => setCode(value ?? '')}
                     options={{
@@ -118,12 +136,12 @@ const Runner = ({ pkg, initialCode }) => {
 
             {/* Console */}
             <div className="runner-console">
-                <button
-                    onClick={run}
-                    className="runner-run-button"
-                >
-                    ▶ Run
-                </button>
+               <div className="runner-buttons">
+                <button onClick={run}>▶ Run</button>
+                <button onClick={clearEditor}>📝 Clear Editor</button>
+                <button onClick={clearConsole}>🧹 Clear Console</button>
+                <button onClick={toggleTheme}>🌓 {theme === 'dark' ? 'Light' : 'Dark'} Theme</button>
+            </div>
 
                 {/* Warnings */}
                 {warnings.length > 0 && (

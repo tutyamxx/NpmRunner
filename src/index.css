@@ -4,6 +4,15 @@
     --text: #c9d1d9;
     --border: #30363d;
     --accent: #58a6ff;
+
+    --console-bg: #1e1e1e;     /* console background */
+    --console-text: #d4d4d4;   /* console text */
+    --console-error: #f48771;  /* error text */
+    --warning-bg: #333;
+    --warning-text: #f48771;
+    --button-bg: #0e639c;
+    --button-text: #fff;
+
     font-family: system-ui, -apple-system;
 }
 
@@ -13,12 +22,29 @@ body {
     color: var(--text);
 }
 
+body.light {
+    --bg: #f5f5f5;
+    --panel: #ffffff;
+    --text: #111;
+    --border: #ccc;
+    --accent: #0d6efd;
+
+    --console-bg: #f0f0f0;
+    --console-text: #000;
+    --console-error: #b00020;
+    --warning-bg: #eee;
+    --warning-text: #b00020;
+    --button-bg: #0d6efd;
+    --button-text: #fff;
+}
+
 button {
-    background: var(--accent);
+    background: var(--button-bg);
     border: none;
     padding: 6px 12px;
-    color: #000;
+    color: var(--button-text);
     cursor: pointer;
+    border-radius: 3px;
 }
 
 pre {
@@ -45,8 +71,8 @@ pre {
 
 .runner-console {
     height: 50%;
-    background-color: #1e1e1e;
-    color: #d4d4d4;
+    background-color: var(--console-bg);
+    color: var(--console-text);
     padding: 4px;
     border-radius: 4px;
     display: flex;
@@ -56,8 +82,8 @@ pre {
 }
 
 .runner-run-button {
-    background-color: #0e639c;
-    color: #fff;
+    background-color: var(--button-bg);
+    color: var(--button-text);
     border: none;
     padding: 6px 12px;
     border-radius: 3px;
@@ -68,8 +94,8 @@ pre {
 }
 
 .runner-warnings {
-    background-color: #333;
-    color: #f48771;
+    background-color: var(--warning-bg);
+    color: var(--warning-text);
     padding: 4px;
     border-radius: 3px;
     margin-bottom: 8px;
@@ -85,15 +111,15 @@ pre {
 }
 
 .runner-log {
-    color: #d4d4d4;
-    border-bottom: 1px solid #333;
+    color: var(--console-text);
+    border-bottom: 1px solid var(--border);
     padding-bottom: 4px;
     margin-bottom: 4px;
     box-sizing: border-box;
 }
 
 .runner-log-error {
-    color: #f48771;
+    color: var(--console-error);
 }
 
 .runner-footer {
@@ -125,4 +151,21 @@ pre {
     height: 100%;
     box-sizing: border-box;
     max-height: 100vh;
+}
+
+.runner-buttons {
+    display: flex;
+    justify-content: center;   /* center buttons horizontally */
+    gap: 1rem;                 /* spacing between buttons */
+    padding: 8px 0;            /* padding top and bottom */
+}
+
+.runner-buttons button {
+    background-color: var(--button-bg);
+    color: var(--button-text);
+    border: none;
+    padding: 6px 12px;
+    border-radius: 3px;
+    cursor: pointer;
+    min-width: 60px;
 }

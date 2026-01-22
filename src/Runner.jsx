@@ -53,7 +53,9 @@ const Runner = ({ pkg, initialCode }) => {
         // --| Extract import statements
         const importRegex = /import\s+(.*?)\s+from\s+['"](.*?)['"]/g;
         const imports = [];
+
         let match;
+
         while ((match = importRegex.exec(code ?? ''))) {
             imports.push({ specifier: match?.[1] ?? '', packageName: match?.[2] ?? '' });
         }
@@ -62,8 +64,7 @@ const Runner = ({ pkg, initialCode }) => {
         const transformedCode = (code ?? '').replace(importRegex, '');
 
         // --| Create dynamic import scripts
-        const scripts = imports.map(
-                ({ packageName, specifier }) => `
+        const scripts = imports.map(({ packageName, specifier }) => `
             <script type="module">
                 import * as module from 'https://esm.run/${packageName ?? ''}';
                 window.${specifier ?? ''} = module?.default ?? module;
@@ -96,6 +97,7 @@ const Runner = ({ pkg, initialCode }) => {
 
     return (
         <div className="runner-container">
+
             {/* Editor */}
             <div className="runner-editor">
                 <Editor

@@ -1,6 +1,10 @@
 /* eslint-disable prefer-template */
 import { useRef, useState, useEffect } from 'react';
-import Editor from '@monaco-editor/react';
+import Editor, { loader } from '@monaco-editor/react';
+import * as monaco from 'monaco-editor';
+
+// --| Prevent @monaco-editor/react from loading Monaco from CDN
+loader.config({ monaco });
 
 /**
  * Runner component: executes JS code in an iframe,
@@ -22,6 +26,7 @@ const Runner = ({ pkg, initialCode }) => {
     const [theme, setTheme] = useState('dark');
     const toggleTheme = () => setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
 
+    // --| Apply theme to body
     useEffect(() => {
         document.body.className = theme;
         localStorage.setItem('theme', theme);
@@ -63,7 +68,6 @@ const Runner = ({ pkg, initialCode }) => {
         const imports = [];
 
         let match;
-
         while ((match = importRegex.exec(code ?? ''))) {
             imports.push({ specifier: match?.[1] ?? '', packageName: match?.[2] ?? '' });
         }
@@ -71,13 +75,17 @@ const Runner = ({ pkg, initialCode }) => {
         // --| Remove import statements from code
         const transformedCode = (code ?? '').replace(importRegex, '');
 
-        // --| Create dynamic import scripts
-        const scripts = imports.map(({ packageName, specifier }) => `
-            <script type="module">
-                import * as module from 'https://esm.sh/${packageName ?? ''}';
-                window.${specifier ?? ''} = module?.default ?? module;
-            </script>
-        `).join('');
+        // --| Create dynamic import scripts for ESM packages via esm.sh
+        const scripts = imports.map(({ packageName, specifier }) => {
+            const encodedName = encodeURIComponent(packageName ?? '');
+
+            return `
+                <script type="module">
+                    import * as module from 'https://esm.sh/${encodedName}@latest';
+                    window.${specifier ?? ''} = module?.default ?? module;
+                </script>
+            `;
+        }).join('');
 
         // --| Inject code into iframe
         iframeRef.current.srcdoc = `

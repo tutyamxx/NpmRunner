@@ -53,7 +53,7 @@ const Sandbox = () => {
             }
 
             try {
-                const res = await fetch(`https://registry.npmjs.org/${pkg}`);
+                const res = await fetch(`https://registry.npmjs.org/${encodeURIComponent(pkg)}`);
                 const data = await res.json();
 
                 const md = data?.readme ?? 'No README or Package not found.';

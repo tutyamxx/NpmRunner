@@ -9,15 +9,17 @@ const cdnResolver = () => ({
 
     setup(build) {
         // --| Intercepts module resolution.
-        // --| If the path starts with 'http', it lets esbuild handle it.
-        // --| Otherwise, rewrites it to a JSDelivr CDN URL.
+        // --| If the path starts with 'http', let esbuild handle it.
+        // --| Otherwise, rewrite it to a JSDelivr CDN URL with encoding.
         build.onResolve({ filter: /.*/ }, (args) => {
             if (args?.path?.startsWith('http')) {
                 return null;
             }
 
+            const encodedPath = encodeURIComponent(args?.path ?? '');
+
             return {
-                path: `https://cdn.jsdelivr.net/npm/${args?.path ?? ''}/+esm`,
+                path: `https://cdn.jsdelivr.net/npm/${encodedPath}/+esm`,
                 namespace: 'cdn'
             };
         });
@@ -27,8 +29,12 @@ const cdnResolver = () => ({
         build.onLoad({ filter: /.*/, namespace: 'cdn' }, async (args) => {
             const response = await fetch(args?.path ?? '');
 
+            if (!response.ok) {
+                throw new Error(`Failed to load module from CDN: ${args.path}`);
+            }
+
             return {
-                contents: await response?.text?.(),
+                contents: await response.text(),
                 loader: 'js'
             };
         });

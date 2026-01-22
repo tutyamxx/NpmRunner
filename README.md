@@ -1,5 +1,14 @@
 # 📦 NpmRunner
 
+<p align="center">
+  <a href="https://github.com/tuty4amxx/npmrunner">
+    <img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License">
+  </a>
+  <a href="https://npmrunner.vercel.app">
+    <img src="https://vercel.com/tuty4amxx/npmrunner/deployments/badge?branch=main" alt="Vercel Deployment">
+  </a>
+</p>
+
 - 📦 **NpmRunner** is a browser-based JavaScript sandbox that lets you **explore and run npm packages directly in the browser**.
 - ⚠️ **NOT** affiliated with `npm, Inc`.
 - 💡 **NOT** a `RunKit` replacement but you can run stuff here

@@ -1,0 +1,128 @@
+:root {
+    --bg: #0d1117;
+    --panel: #161b22;
+    --text: #c9d1d9;
+    --border: #30363d;
+    --accent: #58a6ff;
+    font-family: system-ui, -apple-system;
+}
+
+body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+}
+
+button {
+    background: var(--accent);
+    border: none;
+    padding: 6px 12px;
+    color: #000;
+    cursor: pointer;
+}
+
+pre {
+    background: var(--panel);
+    padding: 10px;
+    border-radius: 6px;
+}
+
+.runner-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    font-family: monospace;
+    gap: 12px;
+    padding: 4px;
+    box-sizing: border-box;
+}
+
+.runner-editor {
+    height: 50%;
+    min-height: 300px;
+    box-sizing: border-box;
+}
+
+.runner-console {
+    height: 50%;
+    background-color: #1e1e1e;
+    color: #d4d4d4;
+    padding: 4px;
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    position: relative;
+}
+
+.runner-run-button {
+    background-color: #0e639c;
+    color: #fff;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 3px;
+    cursor: pointer;
+    margin-bottom: 8px;
+    width: auto;
+    min-width: 60px;
+}
+
+.runner-warnings {
+    background-color: #333;
+    color: #f48771;
+    padding: 4px;
+    border-radius: 3px;
+    margin-bottom: 8px;
+    font-size: 12px;
+}
+
+.runner-logs {
+    flex: 1;
+    overflow-y: auto;
+    margin: 0;
+    line-height: 1.4;
+    box-sizing: border-box;
+}
+
+.runner-log {
+    color: #d4d4d4;
+    border-bottom: 1px solid #333;
+    padding-bottom: 4px;
+    margin-bottom: 4px;
+    box-sizing: border-box;
+}
+
+.runner-log-error {
+    color: #f48771;
+}
+
+.runner-footer {
+    position: absolute;
+    bottom: 4px;
+    right: 8px;
+    font-size: 12px;
+    color: #888;
+    font-style: italic;
+}
+
+.sandbox-container {
+    display: grid;
+    grid-template-rows: 1fr auto;
+    height: 100vh;
+}
+
+.sandbox-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    height: 100%;
+}
+
+.sandbox-readme {
+    padding: 16px;
+    border-right: 1px solid var(--border);
+    overflow-y: auto;
+    overflow-x: hidden;
+    height: 100%;
+    box-sizing: border-box;
+    max-height: 100vh;
+}

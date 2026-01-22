@@ -4,7 +4,6 @@
     --text: #c9d1d9;
     --border: #30363d;
     --accent: #58a6ff;
-
     --console-bg: #1e1e1e;
     --console-text: #d4d4d4;
     --console-error: #f48771;
@@ -24,11 +23,10 @@ body {
 
 body.light {
     --bg: #f5f5f5;
-    --panel: #ffffff;
+    --panel: #fff;
     --text: #111;
     --border: #ccc;
     --accent: #0d6efd;
-
     --console-bg: #f0f0f0;
     --console-text: #000;
     --console-error: #b00020;
@@ -132,7 +130,6 @@ pre {
     font-style: italic;
     display: flex;
     flex-direction: column;
-    align-items: flex-end;
     gap: 2px;
 }
 
@@ -141,7 +138,6 @@ pre {
     align-self: center;
 }
 
-/* GitHub link styling */
 .runner-footer-link {
     color: inherit;
     text-decoration: none;
@@ -172,8 +168,7 @@ pre {
 .sandbox-readme {
     padding: 16px;
     border-right: 1px solid var(--border);
-    overflow-y: auto;
-    overflow-x: hidden;
+    overflow: hidden auto;
     height: 100%;
     box-sizing: border-box;
     max-height: 100vh;
@@ -194,4 +189,17 @@ pre {
     border-radius: 3px;
     cursor: pointer;
     min-width: 60px;
+}
+
+.runner-footer-left {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+}
+
+.runner-footer-center {
+    text-align: center;
+    width: 100%;
+    margin-top: 2px;
 }

@@ -1,0 +1,16 @@
+{
+  "extends": [
+    "stylelint-config-standard",
+    "@stylistic/stylelint-config"
+  ],
+  "plugins": [
+    "@stylistic/stylelint-plugin"
+  ],
+  "rules": {
+    "@stylistic/indentation": 4,
+    "@stylistic/string-quotes": "double",
+    "@stylistic/declaration-block-trailing-semicolon": "always",
+    "@stylistic/max-empty-lines": 1,
+    "@stylistic/no-missing-end-of-source-newline": true
+  }
+}

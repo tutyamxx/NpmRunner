@@ -17,11 +17,11 @@ const extractJsImportCode = (markdown) => {
 
     let match;
 
-    while ((match = regex.exec(markdown ?? ''))) {
-        const codeBlock = match[1]?.trim() ?? '';
+    while ((match = regex?.exec(markdown ?? ''))) {
+        const codeBlock = match?.[1]?.trim() ?? '';
 
         if (/import\s+.*\s+from\s+['"].*['"]/.test(codeBlock)) {
-            matches.push(codeBlock);
+            matches?.push(codeBlock);
         }
     }
 
@@ -45,9 +45,10 @@ const Sandbox = () => {
 
     useEffect(() => {
         const fetchReadme = async () => {
-            // --|Redirect to default package if URL missing pkg
+            // --| Redirect to default package if URL missing pkg
             if (!pkg) {
                 navigate(`/sandbox/${defaultPkg}`, { replace: true });
+
                 return;
             }
 
@@ -85,6 +86,7 @@ const Sandbox = () => {
                         {readme ?? 'No README available'}
                     </ReactMarkdown>
                 </div>
+
                 {/* Runner panel */}
                 <Runner pkg={pkg ?? defaultPkg} initialCode={initialCode} />
             </div>

@@ -1,3 +1,4 @@
+/* eslint-disable prefer-template */
 import { useRef, useState, useEffect } from 'react';
 import Editor from '@monaco-editor/react';
 
@@ -36,13 +37,14 @@ const Runner = ({ pkg, initialCode }) => {
 
     // --| Listen for logs/errors from iframe
     useEffect(() => {
+        // eslint-disable-next-line no-shadow
         const handler = (event) => {
             const args = event?.data?.args ?? [];
             const type = event?.data?.type ?? 'log';
 
             setLogs((current) => [
                 ...current,
-                ...args.map((arg) => ({ type, text: String(arg ?? '') })),
+                ...args.map((arg) => ({ type, text: String(arg ?? '') }))
             ]);
         };
 
@@ -130,12 +132,12 @@ const Runner = ({ pkg, initialCode }) => {
 
             {/* Console */}
             <div className="runner-console">
-               <div className="runner-buttons">
-                <button onClick={run}>▶ Run</button>
-                <button onClick={clearEditor}>📝 Clear Editor</button>
-                <button onClick={clearConsole}>🧹 Clear Console</button>
-                <button onClick={toggleTheme}>🌓 {theme === 'dark' ? 'Light' : 'Dark'} Theme</button>
-            </div>
+                <div className="runner-buttons">
+                    <button onClick={run}>▶ Run</button>
+                    <button onClick={clearEditor}>📝 Clear Editor</button>
+                    <button onClick={clearConsole}>🧹 Clear Console</button>
+                    <button onClick={toggleTheme}>🌓 {theme === 'dark' ? 'Light' : 'Dark'} Theme</button>
+                </div>
 
                 {/* Warnings */}
                 {warnings.length > 0 && (
@@ -160,9 +162,21 @@ const Runner = ({ pkg, initialCode }) => {
 
                 {/* Footer in bottom-right */}
                 <div className="runner-footer">
-                    <div>
-                        📦 NpmRunner — Not affiliated with npm, Inc.
+                    <div className="runner-footer-left">
+                        <div>📦 NpmRunner — Not affiliated with npm, Inc.</div>
+                        <div className="runner-footer-center">
+                            ❤️ Made with love by{' '}
+                            <a
+                                href="https://github.com/tutyamxx"
+                                target="_blank"
+                                rel="noreferrer"
+                                className="runner-footer-link"
+                            >
+                                tutyamxx
+                            </a>
+                        </div>
                     </div>
+
                     <div>
                         <a
                             href="https://github.com/tutyamxx/NpmRunner"

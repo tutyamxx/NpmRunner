@@ -1,7 +1,8 @@
 # 📦 NpmRunner
 
 - 📦 **NpmRunner** is a browser-based JavaScript sandbox that lets you **explore and run npm packages directly in the browser**.
-- ⚠️ Not affiliated with `npm, Inc`.
+- ⚠️ **NOT** affiliated with `npm, Inc`.
+- 💡 **NOT** a `RunKit` replacement but you can run stuff here
 
 You can:
 - Load any npm package by URL
@@ -78,4 +79,3 @@ http://localhost:5173/
 
 This project is for educational and experimental purposes only.
 It is **not affiliated with npm, Inc.**
-

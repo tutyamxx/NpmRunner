@@ -51,9 +51,7 @@ const Runner = ({ pkg, initialCode }) => {
         return () => window.removeEventListener('message', handler);
     }, []);
 
-    /**
-     * Run the code in iframe, dynamically resolving ESM imports
-     */
+    // --| Run the code in iframe, dynamically resolving ESM imports
     const run = () => {
         setLogs([]);
         setWarnings([]);
@@ -103,14 +101,10 @@ const Runner = ({ pkg, initialCode }) => {
         `;
     };
 
-    /**
-     * Clear the editor content
-     */
+    // --| Clear the editor content
     const clearEditor = () => setCode('');
 
-    /**
-     * Clear the console logs
-     */
+    // --| Clear the console logs
     const clearConsole = () => setLogs([]);
 
     return (
@@ -164,7 +158,7 @@ const Runner = ({ pkg, initialCode }) => {
                     ))}
                 </pre>
 
-                     {/* Footer in bottom-right */}
+                {/* Footer in bottom-right */}
                 <div className="runner-footer">
                     <div>
                         📦 NpmRunner — Not affiliated with npm, Inc.

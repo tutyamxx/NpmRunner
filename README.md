@@ -15,10 +15,10 @@ You can:
 
 ## ⚠️ Limitations
 
-- CommonJS-only packages may not work
-- Native Node APIs (fs, path, process) are unavailable
+- `CommonJS`-only packages may not work
+- Native Node APIs (`fs`, `path`, `process`) are unavailable
 - Some packages expect a Node runtime
-- Not all READMEs include runnable browser examples
+- Not all `README` include runnable browser examples
 
 ---
 
@@ -26,8 +26,8 @@ You can:
 
 Visit:
 
-- [https://npmrunner.vercel.app/sandbox/orc-me](/sandbox/orc-me)
-- [https://npmrunner.vercel.app/sandbox/contains-emoji](/sandbox/contains-emoji)
+- [https://npmrunner.vercel.app/sandbox/orc-me](https://npmrunner.vercel.app/sandbox/orc-me)
+- [https://npmrunner.vercel.app/sandbox/contains-emoji](https://npmrunner.vercel.app/sandbox/contains-emoji)
 
 Just replace the package name in the URL.
 
@@ -37,7 +37,7 @@ Just replace the package name in the URL.
 
 - 🧪 Auto-fetch `README` from the npm registry with `HTML` support
 - 🧪 Auto import sample code into the `IDE` from `README`, if present
-- 🧪 Run JavaScript safely inside a sandboxed iframe
+- 🧪 Run `JavaScript` safely inside a `sandboxed iframe`
 - 🧪 Dynamic ESM loading via `esm.run`
 - 🧪 Monaco Editor (`VS Code–like experience`)
 - 🧪 Console output & error capturing

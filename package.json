@@ -1,7 +1,7 @@
 {
   "name": "npm-runner",
   "private": true,
-  "version": "0.0.3",
+  "version": "0.0.4",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -13,7 +13,6 @@
   "dependencies": {
     "@monaco-editor/react": "^4.7.0",
     "esbuild-wasm": "^0.27.2",
-    "marked": "^17.0.1",
     "react": "^19.2.0",
     "react-dom": "^19.2.3",
     "react-markdown": "^10.1.0",

@@ -41,7 +41,7 @@ const Sandbox = () => {
     const [readme, setReadme] = useState('');
     const [initialCode, setInitialCode] = useState('');
 
-    const defaultPkg = 'orc-me';
+    const defaultPkg = 'contains-emoji';
 
     useEffect(() => {
         const fetchReadme = async () => {

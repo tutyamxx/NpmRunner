@@ -1,10 +1,7 @@
 /* eslint-disable prefer-template */
 import { useRef, useState, useEffect } from 'react';
-import Editor, { loader } from '@monaco-editor/react';
-import * as monaco from 'monaco-editor';
-
-// --| Prevent @monaco-editor/react from loading Monaco from CDN
-loader.config({ monaco });
+import Editor from '@monaco-editor/react';
+import { version } from '../package.json';
 
 /**
  * Runner component: executes JS code in an iframe,
@@ -17,7 +14,7 @@ loader.config({ monaco });
  */
 const Runner = ({ pkg, initialCode }) => {
     const iframeRef = useRef(null);
-    const defaultPkg = pkg ?? 'orc-me';
+    const defaultPkg = pkg ?? 'contains-emoji';
 
     const [logs, setLogs] = useState([]);
     const [warnings, setWarnings] = useState([]);
@@ -75,34 +72,40 @@ const Runner = ({ pkg, initialCode }) => {
         // --| Remove import statements from code
         const transformedCode = (code ?? '').replace(importRegex, '');
 
-        // --| Create dynamic import scripts for ESM packages via esm.sh
-        const scripts = imports.map(({ packageName, specifier }) => {
+        // --| Build ESM imports (single module scope)
+        const importLines = imports.map(({ packageName, specifier }) => {
             const encodedName = encodeURIComponent(packageName ?? '');
 
             return `
-                <script type="module">
-                    import * as module from 'https://esm.sh/${encodedName}@latest';
-                    window.${specifier ?? ''} = module?.default ?? module;
-                </script>
+                import * as __pkg_${specifier} from 'https://esm.sh/${encodedName}@latest';
+                window.${specifier} = __pkg_${specifier}.default ?? __pkg_${specifier};
             `;
-        }).join('');
+        }).join('\n');
 
         // --| Inject code into iframe
         iframeRef.current.srcdoc = `
             <!DOCTYPE html>
             <html>
-            <head>${scripts}</head>
             <body>
                 <script type="module">
                     const log = console.log;
                     const error = console.error;
 
-                    console.log = (...args) => { parent.postMessage({ type: 'log', args }, '*'); log(...args); };
-                    console.error = (...args) => { parent.postMessage({ type: 'error', args }, '*'); error(...args); };
+                    console.log = (...args) => {
+                        parent.postMessage({ type: 'log', args }, '*');
+                        log(...args);
+                    };
+
+                    console.error = (...args) => {
+                        parent.postMessage({ type: 'error', args }, '*');
+                        error(...args);
+                    };
+
+                    ${importLines}
 
                     try {
                         ${transformedCode?.split('\n')?.map((line) => '        ' + line)?.join('\n')}
-                    } catch(e) {
+                    } catch (e) {
                         console.error(e);
                     }
                 </script>
@@ -119,7 +122,6 @@ const Runner = ({ pkg, initialCode }) => {
 
     return (
         <div className="runner-container">
-
             {/* Editor */}
             <div className="runner-editor">
                 <Editor
@@ -171,7 +173,7 @@ const Runner = ({ pkg, initialCode }) => {
                 {/* Footer in bottom-right */}
                 <div className="runner-footer">
                     <div className="runner-footer-left">
-                        <div>📦 NpmRunner — Not affiliated with npm, Inc.</div>
+                        <div>📦 NpmRunner <strong>v{version}</strong> — Not affiliated with npm, Inc.</div>
                         <div className="runner-footer-center">
                             ❤️ Made with love by{' '}
                             <a
@@ -208,7 +210,7 @@ const Runner = ({ pkg, initialCode }) => {
                                 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15
                                 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48
                                 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8
-                                c0-4.42-3.58-8-8-8z"/>
+                                c0-4.42-3.58-8-8-8z" />
                             </svg>
                             GitHub
                         </a>

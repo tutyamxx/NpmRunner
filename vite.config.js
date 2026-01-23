@@ -7,7 +7,8 @@ export default defineConfig({
         historyApiFallback: true
     },
     build: {
-        outDir: 'dist'
+        outDir: 'dist',
+        hunkSizeWarningLimit: 2000
     },
     base: '/',
     test: {

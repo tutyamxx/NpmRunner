@@ -18,6 +18,7 @@ const Runner = ({ pkg, initialCode }) => {
 
     const [logs, setLogs] = useState([]);
     const [warnings, setWarnings] = useState([]);
+    const [notification, setNotification] = useState('');
     const [code, setCode] = useState(initialCode ?? `import mod from '${defaultPkg}';\nconsole.log(mod);`);
 
     const [theme, setTheme] = useState('dark');
@@ -36,6 +37,15 @@ const Runner = ({ pkg, initialCode }) => {
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [initialCode]);
+
+    // --| Auto-hide notification after 3 seconds
+    useEffect(() => {
+        if (notification) {
+            const timer = setTimeout(() => setNotification(''), 3000);
+
+            return () => clearTimeout(timer);
+        }
+    }, [notification]);
 
     // --| Listen for logs/errors from iframe
     useEffect(() => {
@@ -59,6 +69,13 @@ const Runner = ({ pkg, initialCode }) => {
     const run = () => {
         setLogs([]);
         setWarnings([]);
+        setNotification('');
+
+        if (!code || !code.trim()) {
+            setNotification('⚠️ Nothing to run!');
+
+            return;
+        }
 
         // --| Extract import statements
         const importRegex = /import\s+(.*?)\s+from\s+['"](.*?)['"]/g;
@@ -139,6 +156,26 @@ const Runner = ({ pkg, initialCode }) => {
                     }}
                 />
             </div>
+
+            {/* Popup notification */}
+            {notification && (
+                <div
+                    style={{
+                        position: 'absolute',
+                        top: '1rem',
+                        right: '1rem',
+                        backgroundColor: '#ff4d4f',
+                        color: 'white',
+                        padding: '0.75rem 1rem',
+                        borderRadius: '6px',
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+                        fontWeight: 'bold',
+                        zIndex: 9999
+                    }}
+                >
+                    {notification}
+                </div>
+            )}
 
             {/* Console */}
             <div className="runner-console">

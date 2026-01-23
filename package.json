@@ -9,7 +9,7 @@
     "preview": "vite preview",
     "lint": "eslint **/*.{js,jsx}",
     "stylelint": "stylelint '**/*.{css,scss}'",
-    "test": "vitest"
+    "test": "vitest run"
   },
   "dependencies": {
     "@monaco-editor/react": "^4.7.0",

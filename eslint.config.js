@@ -19,7 +19,18 @@ export default defineConfig([
         ],
         languageOptions: {
             ecmaVersion: 2020,
-            globals: globals.browser,
+            globals: {
+                ...globals.browser,
+                describe: 'readonly',
+                test: 'readonly',
+                expect: 'readonly',
+                it: 'readonly',
+                beforeEach: 'readonly',
+                afterEach: 'readonly',
+                beforeAll: 'readonly',
+                afterAll: 'readonly',
+                screen: 'readonly'
+            },
             parserOptions: {
                 ecmaVersion: 'latest',
                 ecmaFeatures: { jsx: true },
@@ -31,7 +42,6 @@ export default defineConfig([
             'react/jsx-uses-react': 'off',
             'react/jsx-uses-vars': 'error',
 
-            // General JS rules
             'arrow-spacing': 'error',
             'array-bracket-spacing': ['error', 'never'],
             'arrow-body-style': ['error', 'as-needed'],

@@ -9,5 +9,11 @@ export default defineConfig({
     build: {
         outDir: 'dist'
     },
-    base: '/'
+    base: '/',
+    test: {
+        globals: true,
+        environment: 'jsdom',
+        setupFiles: './src/setupTests.js',
+        include: ['**/*.{test,spec}.{js,ts,jsx,tsx}']
+    }
 });

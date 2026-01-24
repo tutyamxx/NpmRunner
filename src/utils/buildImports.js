@@ -26,10 +26,10 @@ export const buildImports = (code = '') => {
     let transformedCode = code?.replace(importRegex, '')?.replace(requireRegex, '');
 
     // --| Transform any remaining inline require() calls (e.g., var x = require("pkg"))
-    transformedCode = transformedCode?.replace(
-        /require\(['"](.*?)['"]\)/g,
-        (_, pkgName) => `(await import('https://esm.sh/${encodeURIComponent(pkgName)}@latest?bundle'))?.default \
-            ?? (await import('https://esm.sh/${encodeURIComponent(pkgName)}@latest?bundle'))`
+    transformedCode = transformedCode?.replace(/require\(['"](.*?)['"]\)/g, (_, pkgName) =>
+        // eslint-disable-next-line implicit-arrow-linebreak
+        `(await import('https://esm.sh/${encodeURIComponent(pkgName)}@latest?bundle'))?.default \
+        ?? (await import('https://esm.sh/${encodeURIComponent(pkgName)}@latest?bundle'))`
     );
 
     const importLines = imports?.map(({ packageName, specifier }) => {

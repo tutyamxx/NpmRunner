@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { extractJsImportCode } from '../utils/extractJsImportCode';
 
+const npmRegistry = 'registry.npmjs.org';
+
 export const defaultPkg = 'contains-emoji';
 
 /**
@@ -25,7 +27,7 @@ export const useFetchReadme = (pkg) => {
             }
 
             try {
-                const response = await fetch(`https://registry.npmjs.org/${encodeURIComponent(pkg)}`);
+                const response = await fetch(`https://${npmRegistry}/${encodeURIComponent(pkg)}`);
                 const packageData = await response.json();
 
                 const readmeContent = packageData?.readme ?? 'No README or package found.';

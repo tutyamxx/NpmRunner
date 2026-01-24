@@ -94,8 +94,8 @@ pre {
 }
 
 .runner-editor {
-    height: 100%; /* fill its grid cell */
-    min-height: 0; /* keep flex/grid happy */
+    height: 100%;
+    min-height: 0;
 }
 
 .runner-console {

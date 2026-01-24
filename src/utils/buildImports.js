@@ -11,14 +11,14 @@ export const buildImports = (code = '') => {
 
     const imports = [];
 
-    // --| Extract all imports in one loop
-    for (const regex of [importRegex, requireRegex]) {
-        for (const match of code.matchAll(regex)) {
-            const specifier = match?.[1] ?? match?.[2];
-            const packageName = match?.[2] ?? match?.[3];
+    // --| Extract ESM import statements
+    for (const match of code.matchAll(importRegex)) {
+        imports?.push({ specifier: match?.[1], packageName: match?.[2] });
+    }
 
-            imports.push({ specifier, packageName });
-        }
+    // --| Extract require statements as default or destructured imports
+    for (const match of code.matchAll(requireRegex)) {
+        imports?.push({ specifier: match?.[2], packageName: match?.[3] });
     }
 
     // --| Remove original import/require statements

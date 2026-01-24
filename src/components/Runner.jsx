@@ -136,6 +136,7 @@ const Runner = ({ pkg, initialCode }) => {
                     theme={theme === 'dark' ? 'vs-dark' : 'light'}
                     value={code ?? ''}
                     onChange={(value) => setCode(value ?? '')}
+                    onMount={(editor) => editor.layout()}
                     options={{
                         minimap: { enabled: false },
                         fontSize: 14,

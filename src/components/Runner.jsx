@@ -10,6 +10,7 @@ import {
     defaultPkg
 } from '../hooks/useRunnerEffects';
 import { buildImports } from '../utils/buildImports';
+import { buildIframeSrcdoc } from '../utils/buildIframeSrcdoc';
 
 /**
  * Runner component: executes JS code in an iframe,
@@ -57,68 +58,7 @@ const Runner = ({ pkg, initialCode }) => {
         }
 
         const { importLines, transformedCode } = buildImports(code);
-
-        // --| Inject code into iframe and wait for all imports
-        iframeRef.current.srcdoc = `
-            <!DOCTYPE html>
-            <html>
-            <body>
-                <script type="module">
-                    (async () => {
-                        const log = console.log;
-                        const error = console.error;
-
-                        // --| Override console.log to stringify objects safely
-                        console.log = (...args) => {
-                            const formattedArgs = args.map(arg =>
-                                typeof arg === 'object' && arg !== null
-                                    ? safeStringify(arg)
-                                    : String(arg)
-                            );
-                            parent.postMessage({ type: 'log', args: formattedArgs }, '*');
-                            log(...args);
-                        };
-
-                        // --| Override console.error to stringify objects safely
-                        console.error = (...args) => {
-                            const formattedArgs = args.map(arg =>
-                                typeof arg === 'object' && arg !== null
-                                    ? safeStringify(arg)
-                                    : String(arg)
-                            );
-                            parent.postMessage({ type: 'error', args: formattedArgs }, '*');
-                            error(...args);
-                        };
-
-                        // --| Safe stringify function to handle circular references
-                        function safeStringify(obj) {
-                            const seen = new WeakSet();
-                            return JSON.stringify(obj, (key, value) => {
-                                if (typeof value === 'object' && value !== null) {
-                                    if (seen.has(value)) return '[Circular]';
-                                    seen.add(value);
-                                }
-                                return value;
-                            }, 2);
-                        }
-
-                        // --| Await all imports first
-                        ${importLines}
-
-                        // --| Then run the user code
-                        try {
-                            ${transformedCode?.split('\n')?.map(line => `        ${line}`)?.join('\n')}
-                        } catch (e) {
-                            console.error(e);
-                        } finally {
-                            // --| Notify parent that execution is done
-                            parent.postMessage({ type: 'done' }, '*');
-                        }
-                    })();
-                </script>
-            </body>
-            </html>
-        `;
+        iframeRef.current.srcdoc = buildIframeSrcdoc(importLines, transformedCode);
     };
 
     // --| Clear the editor content

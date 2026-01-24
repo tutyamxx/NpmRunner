@@ -86,7 +86,7 @@ export const useAutoHideNotification = (notification, setNotification, duration 
 /**
  * Handle circular references in objects for JSON.stringify
  */
-const getCircularReplacer = () => {
+export const getCircularReplacer = () => {
     const seen = new WeakSet();
 
     return (_key, value) => {

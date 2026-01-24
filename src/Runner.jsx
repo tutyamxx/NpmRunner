@@ -1,3 +1,4 @@
+/* eslint-disable indent */
 /* eslint-disable prefer-template */
 import { useRef, useState, useEffect } from 'react';
 import Editor from '@monaco-editor/react';
@@ -20,6 +21,7 @@ const Runner = ({ pkg, initialCode }) => {
     const [warnings, setWarnings] = useState([]);
     const [notification, setNotification] = useState('');
     const [code, setCode] = useState(initialCode ?? `import mod from '${defaultPkg}';\nconsole.log(mod);`);
+    const [loading, setLoading] = useState(false);
 
     const [theme, setTheme] = useState('dark');
     const toggleTheme = () => setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
@@ -47,17 +49,25 @@ const Runner = ({ pkg, initialCode }) => {
         }
     }, [notification]);
 
-    // --| Listen for logs/errors from iframe
+    // --| Listen for logs/errors and completion from iframe
     useEffect(() => {
         // eslint-disable-next-line no-shadow
         const handler = (event) => {
             const args = event?.data?.args ?? [];
             const type = event?.data?.type ?? 'log';
 
-            setLogs((current) => [
-                ...current,
-                ...args.map((arg) => ({ type, text: String(arg ?? '') }))
-            ]);
+            // --| Update logs
+            if (type === 'log' || type === 'error') {
+                setLogs((current) => [
+                    ...current,
+                    ...args.map((arg) => ({ type, text: String(arg ?? '') }))
+                ]);
+            }
+
+            // --| Re-enable Run button when iframe signals done
+            if (type === 'done') {
+                setLoading(false);
+            }
         };
 
         window.addEventListener('message', handler);
@@ -70,9 +80,11 @@ const Runner = ({ pkg, initialCode }) => {
         setLogs([]);
         setWarnings([]);
         setNotification('');
+        setLoading(true);
 
         if (!code || !code.trim()) {
             setNotification('⚠️ Nothing to run!');
+            setLoading(false);
 
             return;
         }
@@ -91,40 +103,80 @@ const Runner = ({ pkg, initialCode }) => {
 
         // --| Build ESM imports (single module scope)
         const importLines = imports.map(({ packageName, specifier }) => {
-            const encodedName = encodeURIComponent(packageName ?? '');
+            const trimmedSpecifier = specifier?.trim();
+            const encodedPackage = encodeURIComponent(packageName);
+            const safeSpecifierName = specifier.replace(/\W/g, '_');
 
+            // --| Helper snippet for dynamic import with Skypack + esm.sh fallback
+            const importWrapper = (varName) => `
+                let ${varName};
+                try {
+                    ${varName} = await import('https://cdn.skypack.dev/${encodedPackage}');
+                } catch (err) {
+                    console.error('[Package Error]', '${packageName}', err.message || err, '⚠️ This package might be CommonJS or use Node-only APIs.');
+                    try {
+                        ${varName} = await import('https://esm.sh/${encodedPackage}@latest?bundle');
+                    } catch (err2) {
+                        console.error('[Package Error]', '${packageName}', err2.message || err2, '⚠️ This package might be CommonJS or use Node-only APIs.');
+                        ${varName} = {};
+                    }
+                }
+            `;
+
+            // --| Destructured imports
+            if (trimmedSpecifier?.startsWith('{') && trimmedSpecifier?.endsWith('}')) {
+                return `
+                    // --| Destructured import: ${specifier}
+                    ${importWrapper('skypackModule')}
+                    ${specifier?.split(',')?.map(rawName => {
+                        const cleanName = rawName.replace(/[{}]/g, '').trim();
+
+                        return `const ${cleanName} = skypackModule?.${cleanName};`;
+                    }).join('\n')}
+                `;
+            }
+
+            // --| Default import or single named import
             return `
-                import * as __pkg_${specifier} from 'https://esm.sh/${encodedName}@latest';
-                window.${specifier} = __pkg_${specifier}.default ?? __pkg_${specifier};
+                // --| Default import: ${specifier}
+                ${importWrapper(`skypackModule_${safeSpecifierName}`)}
+                const ${specifier} = skypackModule_${safeSpecifierName}.default ?? skypackModule_${safeSpecifierName};
             `;
         }).join('\n');
 
-        // --| Inject code into iframe
+        // --| Inject code into iframe and wait for all imports
         iframeRef.current.srcdoc = `
             <!DOCTYPE html>
             <html>
             <body>
                 <script type="module">
-                    const log = console.log;
-                    const error = console.error;
+                    (async () => {
+                        const log = console.log;
+                        const error = console.error;
 
-                    console.log = (...args) => {
-                        parent.postMessage({ type: 'log', args }, '*');
-                        log(...args);
-                    };
+                        console.log = (...args) => {
+                            parent.postMessage({ type: 'log', args }, '*');
+                            log(...args);
+                        };
 
-                    console.error = (...args) => {
-                        parent.postMessage({ type: 'error', args }, '*');
-                        error(...args);
-                    };
+                        console.error = (...args) => {
+                            parent.postMessage({ type: 'error', args }, '*');
+                            error(...args);
+                        };
 
-                    ${importLines}
+                        // --| Await all imports first
+                        ${importLines}
 
-                    try {
-                        ${transformedCode?.split('\n')?.map((line) => '        ' + line)?.join('\n')}
-                    } catch (e) {
-                        console.error(e);
-                    }
+                        // --| Then run the user code
+                        try {
+                            ${transformedCode?.split('\n')?.map(line => '        ' + line)?.join('\n')}
+                        } catch (e) {
+                            console.error(e);
+                        } finally {
+                            // --| Notify parent that execution is done
+                            parent.postMessage({ type: 'done' }, '*');
+                        }
+                    })();
                 </script>
             </body>
             </html>
@@ -180,7 +232,7 @@ const Runner = ({ pkg, initialCode }) => {
             {/* Console */}
             <div className="runner-console">
                 <div className="runner-buttons">
-                    <button onClick={run}>▶ Run</button>
+                    <button onClick={run} disabled={loading}> {loading ? '⏳ Loading...' : '▶ Run'}</button>
                     <button onClick={clearEditor}>📝 Clear Editor</button>
                     <button onClick={clearConsole}>🧹 Clear Console</button>
                     <button onClick={toggleTheme}>🌓 {theme === 'dark' ? 'Light' : 'Dark'} Theme</button>

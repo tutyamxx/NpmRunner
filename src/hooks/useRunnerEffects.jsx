@@ -116,9 +116,9 @@ export const useIframeListener = (setLogs, setLoading) => {
  */
 export const useInitialCodeUpdate = (initialCode, code, setCode) => {
     useEffect(() => {
-        // --| Only set code if it's currently empty/undefined and initialCode exists
-        if ((code ?? '') === '' && initialCode) {
+        if (!code && initialCode) {
             setCode(initialCode);
         }
-    }, [initialCode, code, setCode]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [initialCode]);
 };

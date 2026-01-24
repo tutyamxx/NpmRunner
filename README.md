@@ -38,6 +38,7 @@ Visit:
 
 - [https://npmrunner.vercel.app/sandbox/orc-me](https://npmrunner.vercel.app/sandbox/orc-me)
 - [https://npmrunner.vercel.app/sandbox/contains-emoji](https://npmrunner.vercel.app/sandbox/contains-emoji)
+- [https://npmrunner.vercel.app/is-valid-domain-extension](https://npmrunner.vercel.app/sandbox/is-valid-domain-extension)
 
 Just replace the package name in the URL.
 

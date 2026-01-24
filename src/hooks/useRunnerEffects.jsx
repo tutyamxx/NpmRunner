@@ -1,0 +1,117 @@
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { extractJsImportCode } from '../utils/extractJsImportCode';
+
+export const defaultPkg = 'contains-emoji';
+
+/**
+ * Custom hook to fetch README and derive initial runner code
+ *
+ * @param {string} pkg - NPM package name
+ * @returns {{ readme: string, initialCode: string }}
+ */
+export const useFetchReadme = (pkg) => {
+    const navigate = useNavigate();
+    const [readme, setReadme] = useState('');
+    const [initialCode, setInitialCode] = useState('');
+
+    useEffect(() => {
+        const fetchReadme = async () => {
+            // --| Redirect to default package if URL missing pkg
+            if (!pkg) {
+                navigate(`/sandbox/${defaultPkg}`, { replace: true });
+
+                return;
+            }
+
+            try {
+                const res = await fetch(`https://registry.npmjs.org/${encodeURIComponent(pkg)}`);
+                const data = await res.json();
+
+                const md = data?.readme ?? 'No README or Package not found.';
+                setReadme(md);
+
+                // --| Extract first ESM import code block
+                const jsBlocks = extractJsImportCode(md);
+
+                if (jsBlocks?.length > 0) {
+                    setInitialCode(jsBlocks?.[0]);
+                } else {
+                    setInitialCode(`import mod from '${pkg}';\nconsole.log(mod);`);
+                }
+            // eslint-disable-next-line no-unused-vars
+            } catch (_err) {
+                setReadme('Package not found!');
+                setInitialCode(`import mod from '${pkg}';\nconsole.log(mod);`);
+            }
+        };
+
+        fetchReadme();
+    }, [pkg, navigate]);
+
+    return { readme, initialCode };
+};
+
+/**
+ * Apply theme to body and persist in localStorage
+ */
+export const useThemeEffect = (theme) => {
+    useEffect(() => {
+        document.body.className = theme;
+        localStorage.setItem('theme', theme);
+    }, [theme]);
+};
+
+/**
+ * Auto-hide notifications after a timeout
+ */
+export const useAutoHideNotification = (notification, setNotification, duration = 3000) => {
+    useEffect(() => {
+        if (!notification) return;
+
+        const timer = setTimeout(() => setNotification(''), duration);
+
+        return () => clearTimeout(timer);
+    }, [notification, setNotification, duration]);
+};
+
+/**
+ * Listen for messages from iframe (logs, errors, done)
+ */
+export const useIframeListener = (setLogs, setLoading) => {
+    useEffect(() => {
+        // eslint-disable-next-line no-shadow
+        const handler = (event) => {
+            const args = event?.data?.args ?? [];
+            const type = event?.data?.type ?? 'log';
+
+            if (type === 'log' || type === 'error') {
+                setLogs((current) => [
+                    ...current,
+                    ...args.map((arg) => ({ type, text: String(arg ?? '') }))
+                ]);
+            }
+
+            if (type === 'done') {
+                setLoading(false);
+            }
+        };
+
+        window.addEventListener('message', handler);
+
+        return () => window.removeEventListener('message', handler);
+    }, [setLogs, setLoading]);
+};
+
+/**
+ * Update code if initialCode changes
+ * Does NOT overwrite if code is empty (allowing clearEditor to work)
+ */
+export const useInitialCodeUpdate = (initialCode, code, setCode) => {
+    useEffect(() => {
+        if (!code && initialCode) {
+            setCode(initialCode);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [initialCode]);
+};

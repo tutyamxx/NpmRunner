@@ -1,8 +1,15 @@
-/* eslint-disable indent */
 /* eslint-disable prefer-template */
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState } from 'react';
 import Editor from '@monaco-editor/react';
-import { version } from '../package.json';
+import { version } from '../../package.json';
+import {
+    useThemeEffect,
+    useAutoHideNotification,
+    useIframeListener,
+    useInitialCodeUpdate,
+    defaultPkg
+} from '../hooks/useRunnerEffects';
+import { buildImports } from '../utils/buildImports';
 
 /**
  * Runner component: executes JS code in an iframe,
@@ -15,65 +22,25 @@ import { version } from '../package.json';
  */
 const Runner = ({ pkg, initialCode }) => {
     const iframeRef = useRef(null);
-    const defaultPkg = pkg ?? 'contains-emoji';
+
+    // --| Use imported defaultPkg if pkg is undefined
+    const currentPkg = pkg ?? defaultPkg;
 
     const [logs, setLogs] = useState([]);
     const [warnings, setWarnings] = useState([]);
     const [notification, setNotification] = useState('');
-    const [code, setCode] = useState(initialCode ?? `import mod from '${defaultPkg}';\nconsole.log(mod);`);
+    const [code, setCode] = useState(
+        initialCode ?? `import mod from '${currentPkg}';\nconsole.log(mod);`
+    );
     const [loading, setLoading] = useState(false);
 
     const [theme, setTheme] = useState('dark');
     const toggleTheme = () => setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
 
-    // --| Apply theme to body
-    useEffect(() => {
-        document.body.className = theme;
-        localStorage.setItem('theme', theme);
-    }, [theme]);
-
-    // --| Update code if initialCode changes and is different
-    useEffect(() => {
-        if (initialCode && initialCode !== code) {
-            setCode(initialCode);
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [initialCode]);
-
-    // --| Auto-hide notification after 3 seconds
-    useEffect(() => {
-        if (notification) {
-            const timer = setTimeout(() => setNotification(''), 3000);
-
-            return () => clearTimeout(timer);
-        }
-    }, [notification]);
-
-    // --| Listen for logs/errors and completion from iframe
-    useEffect(() => {
-        // eslint-disable-next-line no-shadow
-        const handler = (event) => {
-            const args = event?.data?.args ?? [];
-            const type = event?.data?.type ?? 'log';
-
-            // --| Update logs
-            if (type === 'log' || type === 'error') {
-                setLogs((current) => [
-                    ...current,
-                    ...args.map((arg) => ({ type, text: String(arg ?? '') }))
-                ]);
-            }
-
-            // --| Re-enable Run button when iframe signals done
-            if (type === 'done') {
-                setLoading(false);
-            }
-        };
-
-        window.addEventListener('message', handler);
-
-        return () => window.removeEventListener('message', handler);
-    }, []);
+    useThemeEffect(theme);
+    useAutoHideNotification(notification, setNotification);
+    useIframeListener(setLogs, setLoading);
+    useInitialCodeUpdate(initialCode, code, setCode);
 
     // --| Run the code in iframe, dynamically resolving ESM imports
     const run = () => {
@@ -89,62 +56,7 @@ const Runner = ({ pkg, initialCode }) => {
             return;
         }
 
-        // --| Extract import statements
-        const importRegex = /import\s+(.*?)\s+from\s+['"](.*?)['"]/g;
-        const imports = [];
-
-        let match;
-        while ((match = importRegex.exec(code ?? ''))) {
-            imports.push({ specifier: match?.[1] ?? '', packageName: match?.[2] ?? '' });
-        }
-
-        // --| Remove import statements from code
-        const transformedCode = (code ?? '').replace(importRegex, '');
-
-        // --| Build ESM imports (single module scope)
-        const importLines = imports.map(({ packageName, specifier }) => {
-            const trimmedSpecifier = specifier?.trim();
-            const encodedPackage = encodeURIComponent(packageName);
-            const safeSpecifierName = trimmedSpecifier?.replace(/\W/g, '_');
-
-            // --| Helper snippet for dynamic import with Skypack + esm.sh fallback
-            const importWrapper = (varName) => `
-                let ${varName};
-
-                try {
-                    ${varName} = await import('https://cdn.skypack.dev/${encodedPackage}');
-                } catch (err) {
-                    console.error('[Package Error]', '${packageName}', err.message || err, '⚠️ This package might be CommonJS or use Node-only APIs.');
-
-                    try {
-                        ${varName} = await import('https://esm.sh/${encodedPackage}@latest?bundle');
-                    } catch (err2) {
-                        console.error('[Package Error]', '${packageName}', err2.message || err2, '⚠️ This package might be CommonJS or use Node-only APIs.');
-                        ${varName} = {};
-                    }
-                }
-            `;
-
-            // --| Destructured imports
-            if (trimmedSpecifier?.startsWith('{') && trimmedSpecifier?.endsWith('}')) {
-                return `
-                    // --| Destructured import: ${specifier}
-                    ${importWrapper('skypackModule')}
-                    ${specifier?.split(',')?.map(rawName => {
-                        const cleanName = rawName.replace(/[{}]/g, '').trim();
-
-                        return `const ${cleanName} = skypackModule?.${cleanName};`;
-                    }).join('\n')}
-                `;
-            }
-
-            // --| Default import or single named import
-            return `
-                // --| Default import: ${specifier}
-                ${importWrapper(`skypackModule_${safeSpecifierName}`)}
-                const ${specifier} = skypackModule_${safeSpecifierName}.default ?? skypackModule_${safeSpecifierName};
-            `;
-        }).join('\n');
+        const { importLines, transformedCode } = buildImports(code);
 
         // --| Inject code into iframe and wait for all imports
         iframeRef.current.srcdoc = `
@@ -234,10 +146,14 @@ const Runner = ({ pkg, initialCode }) => {
             {/* Console */}
             <div className="runner-console">
                 <div className="runner-buttons">
-                    <button onClick={run} disabled={loading}> {loading ? '⏳ Loading...' : '▶ Run'}</button>
+                    <button onClick={run} disabled={loading}>
+                        {loading ? '⏳ Loading...' : '▶ Run'}
+                    </button>
                     <button onClick={clearEditor}>📝 Clear Editor</button>
                     <button onClick={clearConsole}>🧹 Clear Console</button>
-                    <button onClick={toggleTheme}>🌓 {theme === 'dark' ? 'Light' : 'Dark'} Theme</button>
+                    <button onClick={toggleTheme}>
+                        🌓 {theme === 'dark' ? 'Light' : 'Dark'} Theme
+                    </button>
                 </div>
 
                 {/* Warnings */}
@@ -261,10 +177,12 @@ const Runner = ({ pkg, initialCode }) => {
                     ))}
                 </pre>
 
-                {/* Footer in bottom-right */}
+                {/* Footer */}
                 <div className="runner-footer">
                     <div className="runner-footer-left">
-                        <div>📦 NpmRunner <strong>v{version}</strong> — Not affiliated with npm, Inc.</div>
+                        <div>
+                            📦 NpmRunner <strong>v{version}</strong> — Not affiliated with npm, Inc.
+                        </div>
                         <div className="runner-footer-center">
                             ❤️ Made with love by{' '}
                             <a

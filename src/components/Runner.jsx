@@ -67,15 +67,39 @@ const Runner = ({ pkg, initialCode }) => {
                         const log = console.log;
                         const error = console.error;
 
+                        // --| Override console.log to stringify objects safely
                         console.log = (...args) => {
-                            parent.postMessage({ type: 'log', args }, '*');
+                            const formattedArgs = args.map(arg =>
+                                typeof arg === 'object' && arg !== null
+                                    ? safeStringify(arg)
+                                    : String(arg)
+                            );
+                            parent.postMessage({ type: 'log', args: formattedArgs }, '*');
                             log(...args);
                         };
 
+                        // --| Override console.error to stringify objects safely
                         console.error = (...args) => {
-                            parent.postMessage({ type: 'error', args }, '*');
+                            const formattedArgs = args.map(arg =>
+                                typeof arg === 'object' && arg !== null
+                                    ? safeStringify(arg)
+                                    : String(arg)
+                            );
+                            parent.postMessage({ type: 'error', args: formattedArgs }, '*');
                             error(...args);
                         };
+
+                        // --| Safe stringify function to handle circular references
+                        function safeStringify(obj) {
+                            const seen = new WeakSet();
+                            return JSON.stringify(obj, (key, value) => {
+                                if (typeof value === 'object' && value !== null) {
+                                    if (seen.has(value)) return '[Circular]';
+                                    seen.add(value);
+                                }
+                                return value;
+                            }, 2);
+                        }
 
                         // --| Await all imports first
                         ${importLines}

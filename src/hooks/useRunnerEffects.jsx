@@ -84,6 +84,25 @@ export const useAutoHideNotification = (notification, setNotification, duration 
 };
 
 /**
+ * Handle circular references in objects for JSON.stringify
+ */
+const getCircularReplacer = () => {
+    const seen = new WeakSet();
+
+    return (_key, value) => {
+        if (typeof value === 'object' && value !== null) {
+            if (seen.has(value)) {
+                return '[Circular]';
+            }
+
+            seen.add(value);
+        }
+
+        return value;
+    };
+};
+
+/**
  * Listen for messages from iframe (logs, errors, done)
  */
 export const useIframeListener = (setLogs, setLoading) => {
@@ -95,7 +114,23 @@ export const useIframeListener = (setLogs, setLoading) => {
             if (type === 'log' || type === 'error') {
                 setLogs((current) => [
                     ...current,
-                    ...args.map((arg) => ({ type, text: String(arg ?? '') }))
+                    ...args.map((arg) => {
+                        let text;
+
+                        try {
+                            // --| Convert objects/arrays to formatted JSON safely
+                            if (typeof arg === 'object' && arg !== null) {
+                                text = JSON.stringify(arg, getCircularReplacer(), 2);
+                            } else {
+                                text = String(arg ?? '');
+                            }
+                        } catch {
+                            // --| Fallback if JSON.stringify fails
+                            text = String(arg ?? '');
+                        }
+
+                        return { type, text };
+                    })
                 ]);
             }
 

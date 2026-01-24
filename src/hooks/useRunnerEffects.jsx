@@ -107,6 +107,17 @@ export const getCircularReplacer = () => {
  */
 export const useIframeListener = (setLogs, setLoading) => {
     useEffect(() => {
+        // --| Helper to safely stringify objects/arrays with circular references
+        const formatArg = (arg) => {
+            try {
+                return typeof arg === 'object' && arg !== null
+                    ? JSON.stringify(arg, getCircularReplacer(), 2)
+                    : String(arg ?? '');
+            } catch {
+                return String(arg ?? '');
+            }
+        };
+
         const messageHandler = (msgEvent) => {
             const args = msgEvent?.data?.args ?? [];
             const type = msgEvent?.data?.type ?? 'log';
@@ -114,29 +125,11 @@ export const useIframeListener = (setLogs, setLoading) => {
             if (type === 'log' || type === 'error') {
                 setLogs((current) => [
                     ...current,
-                    ...args.map((arg) => {
-                        let text;
-
-                        try {
-                            // --| Convert objects/arrays to formatted JSON safely
-                            if (typeof arg === 'object' && arg !== null) {
-                                text = JSON.stringify(arg, getCircularReplacer(), 2);
-                            } else {
-                                text = String(arg ?? '');
-                            }
-                        } catch {
-                            // --| Fallback if JSON.stringify fails
-                            text = String(arg ?? '');
-                        }
-
-                        return { type, text };
-                    })
+                    ...args.map((arg) => ({ type, text: formatArg(arg) }))
                 ]);
             }
 
-            if (type === 'done') {
-                setLoading(false);
-            }
+            if (type === 'done') setLoading(false);
         };
 
         window.addEventListener('message', messageHandler);

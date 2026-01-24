@@ -27,6 +27,7 @@ const Runner = ({ pkg, initialCode }) => {
     // --| Use imported defaultPkg if pkg is undefined
     const currentPkg = pkg ?? defaultPkg;
 
+    // --| States XD
     const [, setEditor] = useState(null);
     const [logs, setLogs] = useState([]);
     const [warnings, setWarnings] = useState([]);
@@ -34,6 +35,7 @@ const Runner = ({ pkg, initialCode }) => {
     const [code, setCode] = useState(initialCode ?? `import mod from '${currentPkg}';\nconsole.log(mod);`);
     const [loading, setLoading] = useState(false);
 
+    // --| Theme related
     const [theme, setTheme] = useState(getInitialTheme());
     useThemeEffect(theme);
 
@@ -93,20 +95,7 @@ const Runner = ({ pkg, initialCode }) => {
 
             {/* Popup notification */}
             {notification && (
-                <div
-                    style={{
-                        position: 'absolute',
-                        top: '1rem',
-                        right: '1rem',
-                        backgroundColor: '#ff4d4f',
-                        color: 'white',
-                        padding: '0.75rem 1rem',
-                        borderRadius: '6px',
-                        boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
-                        fontWeight: 'bold',
-                        zIndex: 9999
-                    }}
-                >
+                <div className="runner-notification">
                     {notification}
                 </div>
             )}
@@ -127,7 +116,7 @@ const Runner = ({ pkg, initialCode }) => {
                 {/* Warnings */}
                 {warnings.length > 0 && (
                     <div className="runner-warnings">
-                        {warnings.map((w, i) => (
+                        {warnings?.map((w, i) => (
                             <div key={i}>{w?.text ?? ''}</div>
                         ))}
                     </div>

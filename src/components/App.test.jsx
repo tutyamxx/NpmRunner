@@ -19,4 +19,18 @@ describe('App Routing', () => {
         render(<App />);
         expect(rtlScreen.getByText('Sandbox Component')).toBeInTheDocument();
     });
+
+    it('Renders Sandbox component at /sandbox/another-package', () => {
+        window.history.pushState({}, 'Sandbox page', '/sandbox/another-package');
+
+        render(<App />);
+        expect(rtlScreen.getByText('Sandbox Component')).toBeInTheDocument();
+    });
+
+    it('Renders Sandbox component at /sandbox/ with empty param', () => {
+        window.history.pushState({}, 'Sandbox page', '/sandbox/');
+
+        render(<App />);
+        expect(rtlScreen.getByText('Sandbox Component')).toBeInTheDocument();
+    });
 });

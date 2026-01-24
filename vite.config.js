@@ -8,7 +8,7 @@ export default defineConfig({
     },
     build: {
         outDir: 'dist',
-        hunkSizeWarningLimit: 2000
+        chunkSizeWarningLimit: 2000
     },
     base: '/',
     test: {

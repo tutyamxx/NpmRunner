@@ -11,6 +11,7 @@
     --warning-text: #f48771;
     --button-bg: #0e639c;
     --button-text: #fff;
+    --footer-text-align: right;
 
     font-family: system-ui, -apple-system;
 }
@@ -39,6 +40,7 @@ body.light {
     --warning-text: #b00020;
     --button-bg: #0d6efd;
     --button-text: #fff;
+    --footer-text-align: left;
 }
 
 button {
@@ -150,14 +152,27 @@ pre {
     font-style: italic;
     margin-top: 6px;
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
     align-items: flex-end;
+    gap: 4px;
+    text-align: var(--footer-text-align);
 }
 
 .runner-footer-left {
     display: flex;
     flex-direction: column;
     gap: 2px;
+    text-align: right;
+}
+
+.runner-footer-center {
+    text-align: right;
+}
+
+.runner-footer-github {
+    text-align: right;
+    width: 100%;
+    margin-top: 4px;
 }
 
 .runner-footer-link {
@@ -190,10 +205,17 @@ pre {
     }
 
     .runner-footer {
-        flex-direction: column;
         align-items: center;
         text-align: center;
-        gap: 4px;
+    }
+
+    .runner-footer-left,
+    .runner-footer-center {
+        text-align: center;
+    }
+
+    .runner-footer-github {
+        margin-top: 2px;
     }
 }
 

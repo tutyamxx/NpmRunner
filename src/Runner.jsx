@@ -224,7 +224,7 @@ const Runner = ({ pkg, initialCode }) => {
                         </div>
                     </div>
 
-                    <div>
+                    <div className="runner-footer-github">
                         <a
                             href="https://github.com/tutyamxx/NpmRunner"
                             target="_blank"

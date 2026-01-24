@@ -13,9 +13,7 @@ vi.mock('@monaco-editor/react', () => ({
 }));
 
 describe('Runner Component', () => {
-    beforeEach(() => {
-        vi.restoreAllMocks();
-    });
+    beforeEach(() => vi.restoreAllMocks());
 
     it('Renders editor with initial code', () => {
         render(<Runner pkg="test-package" initialCode="console.log('hi')" />);

@@ -26,6 +26,7 @@ const Runner = ({ pkg, initialCode }) => {
     // --| Use imported defaultPkg if pkg is undefined
     const currentPkg = pkg ?? defaultPkg;
 
+    const [, setEditor] = useState(null);
     const [logs, setLogs] = useState([]);
     const [warnings, setWarnings] = useState([]);
     const [notification, setNotification] = useState('');
@@ -136,7 +137,10 @@ const Runner = ({ pkg, initialCode }) => {
                     theme={theme === 'dark' ? 'vs-dark' : 'light'}
                     value={code ?? ''}
                     onChange={(value) => setCode(value ?? '')}
-                    onMount={(editor) => editor.layout()}
+                    onMount={(editor) => {
+                        setEditor(editor);
+                        editor.layout();
+                    }}
                     options={{
                         minimap: { enabled: false },
                         fontSize: 14,

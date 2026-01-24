@@ -28,18 +28,18 @@ body {
 }
 
 body.light {
-    --bg: #f5f5f5;
-    --panel: #fff;
-    --text: #111;
-    --border: #ccc;
-    --accent: #0d6efd;
-    --console-bg: #f0f0f0;
-    --console-text: #000;
-    --console-error: #b00020;
-    --warning-bg: #eee;
-    --warning-text: #b00020;
-    --button-bg: #0d6efd;
-    --button-text: #fff;
+    --bg: #f3f1eb;
+    --panel: #e6e2d9;
+    --text: #2b2b2b;
+    --border: #c8c2b8;
+    --accent: #b58900;
+    --console-bg: #ece8df;
+    --console-text: #2a2a2a;
+    --console-error: #a13d2d;
+    --warning-bg: #e8e1d4;
+    --warning-text: #8a5a00;
+    --button-bg: #b58900;
+    --button-text: #1e1e1e;
     --footer-text-align: left;
 }
 

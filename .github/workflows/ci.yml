@@ -13,18 +13,24 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: 'lts/*'
 
       - run: npm install
 
-      - name: Run tests
+      - name: Run 💅 Stylelint
+        run: npm run stylelint
+
+      - name: Run 🔍 eslint
+        run: npm run lint
+
+      - name: Run 🧪 tests
         run: npm run test
 
       - name: Deploy to Vercel
-        if: success()  # only runs if tests pass
+        if: success()
         uses: amondnet/vercel-action@v25
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}

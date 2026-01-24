@@ -81,5 +81,59 @@ describe('Sandbox Component', () => {
         });
     });
 
-    // TODO - more tests
+    it('Selects first import-containing JS block when multiple exist', async () => {
+        globalThis.fetch = mockFetch({
+            readme: `
+                # Multi-block
+
+                \`\`\`js
+                console.log('no import');
+                \`\`\`
+
+                \`\`\`js
+                import foo from 'foo';
+                console.log(foo);
+                \`\`\`
+
+                \`\`\`js
+                import bar from 'bar';
+                console.log(bar);
+                \`\`\`
+            `
+        });
+
+        render(
+            <MemoryRouter initialEntries={['/sandbox/multi-package']}>
+                <Routes>
+                    <Route path="/sandbox/:pkg?" element={<Sandbox />} />
+                </Routes>
+            </MemoryRouter>
+        );
+
+        await waitFor(() => {
+            expect(rtlScreen.getByText(/Runner Component: multi-package \| import foo from 'foo';/i)).toBeInTheDocument();
+        });
+    });
+
+    it('Uses default code if README has no JS code blocks', async () => {
+        globalThis.fetch = mockFetch({
+            readme: `
+                # No JS
+
+                Some text here
+            `
+        });
+
+        render(
+            <MemoryRouter initialEntries={['/sandbox/no-js']}>
+                <Routes>
+                    <Route path="/sandbox/:pkg?" element={<Sandbox />} />
+                </Routes>
+            </MemoryRouter>
+        );
+
+        await waitFor(() => {
+            expect(rtlScreen.getByText(/Runner Component: no-js \| import mod from 'no-js';/i)).toBeInTheDocument();
+        });
+    });
 });

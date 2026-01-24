@@ -1,23 +1,32 @@
 # 📦 NpmRunner
 
-<p align="center">
+<div align="center">
   <img src="banner.png" alt="NpmRunner Banner" width="600" style="max-width: 100%; height: auto;" />
-</p>
+</div>
 
 - 📦 **NpmRunner** is a browser-based JavaScript sandbox that lets you **explore and run npm packages directly in the browser**.
-- ⚠️ **NOT** affiliated with `npm, Inc`.
-- 💡 **NOT** a `RunKit` replacement but you can run stuff here
-
-You can:
-- Load any npm package by URL
-- Automatically fetch and render its README
-- Run example code in an isolated iframe
-- See console output and errors in real time
-- Toggle between **dark / light themes**
-- Test packages without installing anything locally
+- **NOT** affiliated with `npm, Inc`.
+- **NOT** a `RunKit` replacement but you can run stuff here
 
 ---
-## 📝 TODO
+
+## 🏖️ What You Can Do / Features 🧸
+
+- 🏄 Load any npm package by URL
+- 📖 Automatically fetch and render its README
+- 🧸 Auto-import sample code from README into the IDE, if present
+- 🖥️ Run JavaScript safely inside a sandboxed iframe
+- ⚡ Dynamic ESM loading
+- 💻 Monaco Editor (`VS Code–like experience`)
+- 🖨️ See console output and errors in real time
+- 🧹 Clear editor & clear console buttons
+- 🌗 Toggle between Dark / Light themes
+- 🔗 Shareable URLs per package
+- 🏖️ Test packages without installing anything locally
+
+---
+
+## 📝 TODO 🪁
 
 - TypeScript support
 - Try to make all packages run (might not be possible/or take me a while)
@@ -32,7 +41,7 @@ You can:
 
 ---
 
-## 🚀 Live Usage
+## 🚀 Live Usage 🏖️
 
 Visit:
 
@@ -44,21 +53,8 @@ Just replace the package name in the URL.
 
 ---
 
-## ✨ Features
 
-- 🧪 Auto-fetch `README` from the npm registry with `HTML` support
-- 🧪 Auto import sample code into the `IDE` from `README`, if present
-- 🧪 Run `JavaScript` safely inside a `sandboxed iframe`
-- 🧪 Dynamic ESM loading via `esm.run`
-- 🧪 Monaco Editor (`VS Code–like experience`)
-- 🧪 Console output & error capturing
-- 🧪 Clear editor & clear console buttons
-- 🧪 `Dark` / `Light theme` (persisted via localStorage - WIP)
-- 🧪 Shareable URLs per package
-
----
-
-## 🧑‍💻 Run Locally
+## 🧑‍💻 Run Locally 🏖️
 
 ### 1. Clone the repo
 

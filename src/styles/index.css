@@ -218,6 +218,24 @@ pre {
     .runner-footer-github {
         margin-top: 2px;
     }
+
+    .runner-console {
+        flex: 1.2;
+        padding: 8px;
+        font-size: 14px;
+        border-radius: 6px;
+        background-color: #222;
+    }
+
+    .runner-log,
+    .runner-log-error {
+        padding: 6px 4px;
+    }
+
+    .runner-logs {
+        max-height: 50vh;
+        overflow-y: auto;
+    }
 }
 
 @supports (padding: env(safe-area-inset-bottom)) {

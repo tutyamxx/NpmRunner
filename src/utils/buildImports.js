@@ -5,67 +5,67 @@
  * @returns {string} - JS snippet with all import statements
  */
 export const buildImports = (code = '') => {
+    // --| Regexes for ESM imports and require statements
     const importRegex = /import\s+(.*?)\s+from\s+['"](.*?)['"]/g;
-
-    // --| Match any require statement: const/let/var, default or destructured
     const requireRegex = /(const|let|var)\s+(\{?.*?\}?)\s*=\s*require\(['"](.*?)['"]\)/g;
 
     const imports = [];
 
-    // --| Extract ESM import statements
-    for (const match of code.matchAll(importRegex)) {
-        imports?.push({ specifier: match?.[1], packageName: match?.[2] });
+    // --| Extract all imports in one loop
+    for (const regex of [importRegex, requireRegex]) {
+        for (const match of code.matchAll(regex)) {
+            const specifier = match?.[1] ?? match?.[2];
+            const packageName = match?.[2] ?? match?.[3];
+
+            imports.push({ specifier, packageName });
+        }
     }
 
-    // --| Extract require statements as default or destructured imports
-    for (const match of code.matchAll(requireRegex)) {
-        imports?.push({ specifier: match?.[2], packageName: match?.[3] });
-    }
-
-    // --| Remove original import/require statements from user code
+    // --| Remove original import/require statements
     let transformedCode = code?.replace(importRegex, '')?.replace(requireRegex, '');
 
-    // --| Transform any remaining inline require() calls (e.g., var x = require("pkg"))
+    // --| Transform remaining inline require() calls
     transformedCode = transformedCode?.replace(/require\(['"](.*?)['"]\)/g, (_, pkgName) =>
         // eslint-disable-next-line implicit-arrow-linebreak
         `(await import('https://esm.sh/${encodeURIComponent(pkgName)}@latest?bundle'))?.default \
         ?? (await import('https://esm.sh/${encodeURIComponent(pkgName)}@latest?bundle'))`
     );
 
-    const importLines = imports?.map(({ packageName, specifier }) => {
-        const trimmedSpecifier = specifier?.trim();
-        const encodedPackage = encodeURIComponent(packageName);
-        const safeSpecifierName = trimmedSpecifier?.replace(/\W/g, '_');
+    // --| Wrapper to try multiple CDNs for a package
+    const importWrapper = (varName, pkg) => `
+        let ${varName};
 
-        const importWrapper = (varName) => `
-            let ${varName};
+        try {
+            ${varName} = await import('https://cdn.skypack.dev/${encodeURIComponent(pkg)}');
+        } catch (err) {
+            console.error('[Package Error]', '${pkg}', err?.message ?? err, '⚠️ Might be expecting a Node runtime.');
 
             try {
-                ${varName} = await import('https://cdn.skypack.dev/${encodedPackage}');
-            } catch (err) {
-                console.error('[Package Error]', '${packageName}', err?.message ?? err, '⚠️ Might be expecting a Node runtime.');
-
-                try {
-                    ${varName} = await import('https://esm.sh/${encodedPackage}@latest?bundle');
-                } catch (err2) {
-                    console.error('[Package Error]', '${packageName}', err2?.message ?? err2, '⚠️ Failed to load.');
-                    ${varName} = {};
-                }
+                ${varName} = await import('https://esm.sh/${encodeURIComponent(pkg)}@latest?bundle');
+            } catch (err2) {
+                console.error('[Package Error]', '${pkg}', err2?.message ?? err2, '⚠️ Failed to load.');
+                ${varName} = {};
             }
-        `;
+        }
+    `;
+
+    // --| Generate import lines
+    const importLines = imports?.map(({ packageName, specifier }) => {
+        const trimmedSpecifier = specifier?.trim();
+        const safeVar = trimmedSpecifier?.replace(/\W/g, '_');
 
         // --| Destructured imports
         if (trimmedSpecifier?.startsWith('{') && trimmedSpecifier?.endsWith('}')) {
             return `
-                ${importWrapper('skypackModule')}
+                ${importWrapper('skypackModule', packageName)}
                 const { ${trimmedSpecifier?.replace(/[{}]/g, '')} } = skypackModule?.default ?? skypackModule ?? {};
             `;
         }
 
         // --| Default import / require import
         return `
-            ${importWrapper(`skypackModule_${safeSpecifierName}`)}
-            const ${trimmedSpecifier} = skypackModule_${safeSpecifierName}?.default ?? skypackModule_${safeSpecifierName} ?? {};
+            ${importWrapper(`skypackModule_${safeVar}`, packageName)}
+            const ${trimmedSpecifier} = skypackModule_${safeVar}?.default ?? skypackModule_${safeVar} ?? {};
         `;
     })?.join('\n');
 

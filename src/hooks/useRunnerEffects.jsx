@@ -54,12 +54,24 @@ export const useFetchReadme = (pkg) => {
 
 /**
  * Apply theme to body and persist in localStorage
+ *
+ * @param {string} theme - Current theme ('`light`' or '`dark`')
  */
 export const useThemeEffect = (theme) => {
     useEffect(() => {
+        // --| Apply current theme to body
         document.body.className = theme;
         localStorage.setItem('theme', theme);
     }, [theme]);
+};
+
+/**
+ * Get initial theme from localStorage or default
+ */
+export const getInitialTheme = () => {
+    const saved = localStorage.getItem('theme');
+
+    return saved === 'light' || saved === 'dark' ? saved : 'dark';
 };
 
 /**

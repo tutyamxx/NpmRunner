@@ -4,6 +4,7 @@ import Editor from '@monaco-editor/react';
 import { version } from '../../package.json';
 import {
     useThemeEffect,
+    getInitialTheme,
     useAutoHideNotification,
     useIframeListener,
     useInitialCodeUpdate,
@@ -29,15 +30,14 @@ const Runner = ({ pkg, initialCode }) => {
     const [logs, setLogs] = useState([]);
     const [warnings, setWarnings] = useState([]);
     const [notification, setNotification] = useState('');
-    const [code, setCode] = useState(
-        initialCode ?? `import mod from '${currentPkg}';\nconsole.log(mod);`
-    );
+    const [code, setCode] = useState(initialCode ?? `import mod from '${currentPkg}';\nconsole.log(mod);`);
     const [loading, setLoading] = useState(false);
 
-    const [theme, setTheme] = useState('dark');
-    const toggleTheme = () => setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
-
+    const [theme, setTheme] = useState(getInitialTheme());
     useThemeEffect(theme);
+
+    const toggleTheme = () => setTheme(prev => (prev === 'dark' ? 'light' : 'dark'));
+
     useAutoHideNotification(notification, setNotification);
     useIframeListener(setLogs, setLoading);
     useInitialCodeUpdate(initialCode, code, setCode);

@@ -1,9 +1,7 @@
 # 📦 NpmRunner
 
 <p align="center">
-  <a href="https://github.com/tuty4amxx/npmrunner">
-    <img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License">
-  </a>
+  <img src="banner.png" alt="NpmRunner Banner" width="400"/>
 </p>
 
 - 📦 **NpmRunner** is a browser-based JavaScript sandbox that lets you **explore and run npm packages directly in the browser**.
@@ -85,3 +83,9 @@ http://localhost:5173/
 
 This project is for educational and experimental purposes only.
 It is **not affiliated with npm, Inc.**
+
+<p align="center">
+  <a href="https://github.com/tuty4amxx/npmrunner">
+    <img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License">
+  </a>
+</p>

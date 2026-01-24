@@ -1,4 +1,3 @@
-/* eslint-disable prefer-template */
 import { useRef, useState } from 'react';
 import Editor from '@monaco-editor/react';
 import { version } from '../../package.json';
@@ -83,7 +82,7 @@ const Runner = ({ pkg, initialCode }) => {
 
                         // --| Then run the user code
                         try {
-                            ${transformedCode?.split('\n')?.map(line => '        ' + line)?.join('\n')}
+                            ${transformedCode?.split('\n')?.map(line => `        ${line}`)?.join('\n')}
                         } catch (e) {
                             console.error(e);
                         } finally {

@@ -25,14 +25,14 @@ export const useFetchReadme = (pkg) => {
             }
 
             try {
-                const res = await fetch(`https://registry.npmjs.org/${encodeURIComponent(pkg)}`);
-                const data = await res.json();
+                const response = await fetch(`https://registry.npmjs.org/${encodeURIComponent(pkg)}`);
+                const packageData = await response.json();
 
-                const md = data?.readme ?? 'No README or Package not found.';
-                setReadme(md);
+                const readmeContent = packageData?.readme ?? 'No README or package found.';
+                setReadme(readmeContent);
 
                 // --| Extract first ESM import code block
-                const jsBlocks = extractJsImportCode(md);
+                const jsBlocks = extractJsImportCode(readmeContent);
 
                 if (jsBlocks?.length > 0) {
                     setInitialCode(jsBlocks?.[0]);
@@ -68,11 +68,7 @@ export const useThemeEffect = (theme) => {
 /**
  * Get initial theme from localStorage or default
  */
-export const getInitialTheme = () => {
-    const saved = localStorage.getItem('theme');
-
-    return saved === 'light' || saved === 'dark' ? saved : 'dark';
-};
+export const getInitialTheme = () => ['light', 'dark'].includes(localStorage?.getItem?.('theme') ?? '') ? localStorage.getItem('theme') : 'dark';
 
 /**
  * Auto-hide notifications after a timeout
@@ -92,10 +88,9 @@ export const useAutoHideNotification = (notification, setNotification, duration 
  */
 export const useIframeListener = (setLogs, setLoading) => {
     useEffect(() => {
-        // eslint-disable-next-line no-shadow
-        const handler = (event) => {
-            const args = event?.data?.args ?? [];
-            const type = event?.data?.type ?? 'log';
+        const messageHandler = (msgEvent) => {
+            const args = msgEvent?.data?.args ?? [];
+            const type = msgEvent?.data?.type ?? 'log';
 
             if (type === 'log' || type === 'error') {
                 setLogs((current) => [
@@ -109,9 +104,9 @@ export const useIframeListener = (setLogs, setLoading) => {
             }
         };
 
-        window.addEventListener('message', handler);
+        window.addEventListener('message', messageHandler);
 
-        return () => window.removeEventListener('message', handler);
+        return () => window.removeEventListener('message', messageHandler);
     }, [setLogs, setLoading]);
 };
 
@@ -121,9 +116,9 @@ export const useIframeListener = (setLogs, setLoading) => {
  */
 export const useInitialCodeUpdate = (initialCode, code, setCode) => {
     useEffect(() => {
-        if (!code && initialCode) {
+        // --| Only set code if it's currently empty/undefined and initialCode exists
+        if ((code ?? '') === '' && initialCode) {
             setCode(initialCode);
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [initialCode]);
+    }, [initialCode, code, setCode]);
 };

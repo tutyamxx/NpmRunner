@@ -6,33 +6,42 @@
  */
 export const buildImports = (code = '') => {
     const importRegex = /import\s+(.*?)\s+from\s+['"](.*?)['"]/g;
+    const requireRegex = /const\s+(\w+)\s*=\s*require\(['"](.*?)['"]\)/g;
+
     const imports = [];
 
-    let match;
-
-    while ((match = importRegex?.exec(code))) {
-        imports.push({ specifier: match?.[1] ?? '', packageName: match?.[2] ?? '' });
+    // --| Extract ESM import statements
+    for (const match of code.matchAll(importRegex)) {
+        imports?.push({ specifier: match?.[1], packageName: match?.[2] });
     }
 
-    const transformedCode = code?.replace(importRegex, '');
+    // --| Extract require statements as default imports
+    for (const match of code.matchAll(requireRegex)) {
+        imports?.push({ specifier: match?.[1], packageName: match?.[2] });
+    }
 
-    const importLines = imports?.map(({ packageName, specifier }) => {
+    // --| Remove original import/require statements from user code
+    const transformedCode = code
+        .replace(importRegex, '')
+        .replace(requireRegex, '');
+
+    const importLines = imports.map(({ packageName, specifier }) => {
         const trimmedSpecifier = specifier?.trim();
         const encodedPackage = encodeURIComponent(packageName);
         const safeSpecifierName = trimmedSpecifier?.replace(/\W/g, '_');
 
         const importWrapper = (varName) => `
+
             let ${varName};
 
             try {
                 ${varName} = await import('https://cdn.skypack.dev/${encodedPackage}');
             } catch (err) {
-                console.error('[Package Error]', '${packageName}', err.message || err, '⚠️ This package might be CommonJS or use Node-only APIs.');
-
+                console.error('[Package Error]', '${packageName}', err.message || err, '⚠️ Might be CommonJS or Node-only.');
                 try {
                     ${varName} = await import('https://esm.sh/${encodedPackage}@latest?bundle');
                 } catch (err2) {
-                    console.error('[Package Error]', '${packageName}', err2.message || err2, '⚠️ This package might be CommonJS or use Node-only APIs.');
+                    console.error('[Package Error]', '${packageName}', err2.message || err2, '⚠️ Failed to load.');
                     ${varName} = {};
                 }
             }
@@ -40,19 +49,18 @@ export const buildImports = (code = '') => {
 
         // --| Destructured imports
         if (trimmedSpecifier?.startsWith('{') && trimmedSpecifier?.endsWith('}')) {
-            return `${importWrapper('skypackModule')}${specifier?.split(',')?.map(rawName => {
-                const cleanName = rawName?.replace(/[{}]/g, '')?.trim();
-
-                return `const ${cleanName} = skypackModule?.${cleanName};`;
-            }).join('\n')}`;
+            return `
+                ${importWrapper('skypackModule')}
+                const { ${trimmedSpecifier?.replace(/[{}]/g, '')} } = skypackModule?.default ?? skypackModule ?? {};
+            `;
         }
 
-        // --| Default import
+        // --| Default import / require import
         return `
-                ${importWrapper(`skypackModule_${safeSpecifierName}`)}
-                const ${specifier} = skypackModule_${safeSpecifierName}.default ?? skypackModule_${safeSpecifierName};
+            ${importWrapper(`skypackModule_${safeSpecifierName}`)}
+            const ${trimmedSpecifier} = skypackModule_${safeSpecifierName}.default ?? skypackModule_${safeSpecifierName} ?? {};
         `;
-    }).join('\n');
+    })?.join('\n');
 
     return { importLines, transformedCode };
 };

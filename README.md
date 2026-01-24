@@ -16,7 +16,7 @@
 - 📖 Automatically fetch and render its README
 - 🧸 Auto-import sample code from README into the IDE, if present
 - 🖥️ Run JavaScript safely inside a sandboxed iframe
-- ⚡ Dynamic ESM loading
+- ⚡ Dynamic ESM loading, **with CommonJS (require) support**
 - 💻 Monaco Editor (`VS Code–like experience`)
 - 🖨️ See console output and errors in real time
 - 🧹 Clear editor & clear console buttons
@@ -29,12 +29,10 @@
 ## 📝 TODO 🪁
 
 - TypeScript support
-- Try to make all packages run (might not be possible/or take me a while)
 - Add more stuff.
 
 ## ⚠️ Limitations
 
-- `CommonJS`-only packages may not work
 - Native Node APIs (`fs`, `path`, `process`) are unavailable
 - Some packages expect a Node runtime
 - Not all `README` include runnable browser examples
@@ -47,7 +45,7 @@ Visit:
 
 - [https://npmrunner.vercel.app/sandbox/orc-me](https://npmrunner.vercel.app/sandbox/orc-me)
 - [https://npmrunner.vercel.app/sandbox/contains-emoji](https://npmrunner.vercel.app/sandbox/contains-emoji)
-- [https://npmrunner.vercel.app/is-valid-domain-extension](https://npmrunner.vercel.app/sandbox/is-valid-domain-extension)
+- [https://npmrunner.vercel.app/sandbox/is-valid-domain-extension](https://npmrunner.vercel.app/sandbox/is-valid-domain-extension)
 
 Just replace the package name in the URL.
 

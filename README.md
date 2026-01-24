@@ -1,7 +1,7 @@
 # 📦 NpmRunner
 
 <p align="center">
-  <img src="banner.png" alt="NpmRunner Banner" width="400"/>
+  <img src="banner.png" alt="NpmRunner Banner" width="900"/>
 </p>
 
 - 📦 **NpmRunner** is a browser-based JavaScript sandbox that lets you **explore and run npm packages directly in the browser**.

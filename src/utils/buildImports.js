@@ -21,9 +21,7 @@ export const buildImports = (code = '') => {
     }
 
     // --| Remove original import/require statements from user code
-    const transformedCode = code
-        .replace(importRegex, '')
-        .replace(requireRegex, '');
+    const transformedCode = code?.replace(importRegex, '')?.replace(requireRegex, '');
 
     const importLines = imports.map(({ packageName, specifier }) => {
         const trimmedSpecifier = specifier?.trim();

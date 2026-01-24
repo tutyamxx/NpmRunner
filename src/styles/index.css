@@ -23,8 +23,7 @@ body {
     background: var(--bg);
     color: var(--text);
     overscroll-behavior: none;
-    /* stylelint-disable-next-line property-no-vendor-prefix */
-    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
 }
 
 body.light {
@@ -100,6 +99,7 @@ pre {
 
 .runner-console {
     min-height: 0;
+    min-width: 0;
     display: flex;
     flex-direction: column;
     background-color: var(--console-bg);
@@ -131,9 +131,11 @@ pre {
 
 .runner-logs {
     flex: 1;
-    overflow-y: auto;
+    overflow: hidden auto;
     margin: 0;
     line-height: 1.4;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
 }
 
 .runner-log {
@@ -141,6 +143,7 @@ pre {
     border-bottom: 1px solid var(--border);
     padding-bottom: 4px;
     margin-bottom: 4px;
+    white-space: pre-wrap;
 }
 
 .runner-log-error {
@@ -187,8 +190,7 @@ pre {
     text-decoration: underline;
 }
 
-/* stylelint-disable-next-line media-feature-range-notation */
-@media (max-width: 768px) {
+@media (width <= 768px) {
     .sandbox-grid {
         grid-template-columns: 1fr;
         grid-template-rows: auto 1fr;
@@ -234,7 +236,6 @@ pre {
 
     .runner-logs {
         max-height: 50vh;
-        overflow-y: auto;
     }
 }
 

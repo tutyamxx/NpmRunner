@@ -105,7 +105,7 @@ const Runner = ({ pkg, initialCode }) => {
         const importLines = imports.map(({ packageName, specifier }) => {
             const trimmedSpecifier = specifier?.trim();
             const encodedPackage = encodeURIComponent(packageName);
-            const safeSpecifierName = specifier?.replace(/\W/g, '_');
+            const safeSpecifierName = trimmedSpecifier?.replace(/\W/g, '_');
 
             // --| Helper snippet for dynamic import with Skypack + esm.sh fallback
             const importWrapper = (varName) => `

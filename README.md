@@ -17,6 +17,11 @@ You can:
 - Test packages without installing anything locally
 
 ---
+## 📝 TODO
+
+- TypeScript support
+- Try to make all packages run (might not be possible/or take me a while)
+- Add more stuff.
 
 ## ⚠️ Limitations
 

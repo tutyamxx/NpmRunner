@@ -54,7 +54,7 @@ const Runner = ({ pkg, initialCode }) => {
         setLoading(true);
 
         if (!code || !code.trim()) {
-            setNotification('⚠️ Nothing to run!');
+            setNotification('🏖️ Nothing to run!');
             setLoading(false);
 
             return;
@@ -63,7 +63,7 @@ const Runner = ({ pkg, initialCode }) => {
         try {
             parse(code, { ecmaVersion: 2026, sourceType: 'module' });
         } catch (err) {
-            setNotification(`⚠️ Syntax Error: ${err?.message}`);
+            setNotification(`🏖️ Syntax Error: ${err?.message}`);
             setLoading(false);
 
             return;
@@ -88,7 +88,7 @@ const Runner = ({ pkg, initialCode }) => {
                     setCode={setCode}
                     theme={theme}
                     // eslint-disable-next-line no-console
-                    onEditorMount={() => console.log('✅ Editor mounted!')}
+                    onEditorMount={() => console.log('🏖️ ✅ Editor mounted!')}
                 />
             </div>
 
@@ -102,14 +102,10 @@ const Runner = ({ pkg, initialCode }) => {
             {/* Console */}
             <div className="runner-console">
                 <div className="runner-buttons">
-                    <button onClick={run} disabled={loading}>
-                        {loading ? '⏳ Loading...' : '▶ Run'}
-                    </button>
+                    <button onClick={run} disabled={loading}>{loading ? '⏳ Loading...' : '▶ Run'}</button>
                     <button onClick={clearEditor}>📝 Clear Editor</button>
                     <button onClick={clearConsole}>🧹 Clear Console</button>
-                    <button onClick={toggleTheme}>
-                        🌓 {theme === 'dark' ? 'Light' : 'Dark'} Theme
-                    </button>
+                    <button onClick={toggleTheme}>🌓 {theme === 'dark' ? 'Light' : 'Dark'} Theme</button>
                 </div>
 
                 {/* Warnings */}
@@ -123,7 +119,7 @@ const Runner = ({ pkg, initialCode }) => {
 
                 {/* Logs */}
                 <pre className="runner-logs">
-                    {logs.map((log, i) => (
+                    {logs?.map((log, i) => (
                         <div
                             key={i}
                             className={`runner-log ${log?.type === 'error' ? 'runner-log-error' : ''}`}

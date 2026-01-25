@@ -20,9 +20,9 @@ const Sandbox = () => {
 
     return (
         <div className="sandbox-container">
-            <div className="sandbox-grid" style={{ height: '100%' }}>
+            <div className="sandbox-grid">
                 {/* Readme panel */}
-                <div className="sandbox-readme" style={{ height: '100%', overflowY: 'auto' }}>
+                <div className="sandbox-readme">
                     <ReactMarkdown rehypePlugins={[rehypeRaw]}>
                         {readme ?? 'No README available'}
                     </ReactMarkdown>

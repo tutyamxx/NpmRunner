@@ -11,7 +11,7 @@ import PropTypes from 'prop-types';
  * - theme: 'light' | 'dark'
  * - onEditorMount: optional callback to get editor instance
  */
-const SandboxEditor = ({ code, setCode, theme = 'dark', onEditorMount }) => {
+const CodeEditor = ({ code, setCode, theme = 'dark', onEditorMount }) => {
     const containerRef = useRef(null);
 
     return (
@@ -56,11 +56,11 @@ const SandboxEditor = ({ code, setCode, theme = 'dark', onEditorMount }) => {
     );
 };
 
-SandboxEditor.propTypes = {
+CodeEditor.propTypes = {
     code: PropTypes.string.isRequired,
     setCode: PropTypes.func.isRequired,
     theme: PropTypes.oneOf(['light', 'dark']),
     onEditorMount: PropTypes.func
 };
 
-export default SandboxEditor;
+export default CodeEditor;

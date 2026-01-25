@@ -270,3 +270,16 @@ pre {
         transform: translateY(0);
     }
 }
+
+.runner-footer-link-commit {
+    color: #58a6ff;
+    text-decoration: none;
+    opacity: 1;
+}
+
+.runner-footer-link-commit:hover,
+.runner-footer-link-commit:focus,
+.runner-footer-link-commit:active {
+    color: #58a6ff;
+    text-decoration: underline;
+}

@@ -79,6 +79,9 @@ const Runner = ({ pkg, initialCode }) => {
     // --| Clear the console logs
     const clearConsole = () => setLogs([]);
 
+    // --| Get Vercel deployment commit
+    const commitHash = import.meta.env.VITE_VERCEL_COMMIT_SHA;
+
     return (
         <div className="runner-container">
             {/* Editor */}
@@ -174,6 +177,16 @@ const Runner = ({ pkg, initialCode }) => {
                                 c0-4.42-3.58-8-8-8z" />
                             </svg>
                             GitHub
+                        </a>
+                        {' '}|{' '}
+                        <a
+                            href={commitHash ? `https://github.com/tutyamxx/NpmRunner/commit/${commitHash}` : ''}
+                            // eslint-disable-next-line no-undefined
+                            target={commitHash ? '_blank' : undefined}
+                            rel="noreferrer"
+                            className="runner-footer-link-commit"
+                        >
+                            <strong>({commitHash?.slice(0, 7) || 'local'})</strong>
                         </a>
                     </div>
                 </div>

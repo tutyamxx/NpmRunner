@@ -6,7 +6,7 @@ import CodeEditor from './CodeEditor';
 vi.mock('@monaco-editor/react', () => ({
     __esModule: true,
     default: ({ onMount, value }) => {
-        const fakeEditor = { layout: vi.fn(), focus: vi.fn() };
+        const fakeEditor = { layout: vi.fn(), focus: vi.fn(), updateOptions: vi.fn() };
         const fakeMonaco = { editor: { setTheme: vi.fn() } };
         if (onMount) onMount(fakeEditor, fakeMonaco);
 
@@ -14,7 +14,7 @@ vi.mock('@monaco-editor/react', () => ({
     }
 }));
 
-describe('SandboxEditor', () => {
+describe('Code Editor', () => {
     it('Renders correctly with given code', () => {
         const code = 'console.log("hello")';
         const setCode = vi.fn();

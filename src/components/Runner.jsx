@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
-import Editor from '@monaco-editor/react';
+import PropTypes from 'prop-types';
+import CodeEditor from './CodeEditor';
 import { version } from '../../package.json';
 import {
     useThemeEffect,
@@ -28,7 +29,6 @@ const Runner = ({ pkg, initialCode }) => {
     const currentPkg = pkg ?? defaultPkg;
 
     // --| States XD
-    const [, setEditor] = useState(null);
     const [logs, setLogs] = useState([]);
     const [warnings, setWarnings] = useState([]);
     const [notification, setNotification] = useState('');
@@ -73,23 +73,13 @@ const Runner = ({ pkg, initialCode }) => {
         <div className="runner-container">
             {/* Editor */}
             <div className="runner-editor">
-                <Editor
-                    height="100%"
+                <CodeEditor
+                    code={code}
+                    setCode={setCode}
+                    theme={theme}
                     language="javascript"
-                    theme={theme === 'dark' ? 'vs-dark' : 'light'}
-                    value={code ?? ''}
-                    onChange={(value) => setCode(value ?? '')}
-                    onMount={(editor) => {
-                        setEditor(editor);
-                        editor.layout();
-                    }}
-                    options={{
-                        minimap: { enabled: false },
-                        fontSize: 14,
-                        scrollBeyondLastLine: false,
-                        lineNumbers: 'on',
-                        wordWrap: 'on'
-                    }}
+                    // eslint-disable-next-line no-console
+                    onEditorMount={() => console.log('✅ Editor mounted!')}
                 />
             </div>
 
@@ -187,6 +177,17 @@ const Runner = ({ pkg, initialCode }) => {
             </div>
         </div>
     );
+};
+
+Runner.propTypes = {
+    pkg: PropTypes.string,
+    initialCode: PropTypes.string
+};
+
+Runner.defaultProps = {
+    // eslint-disable-next-line no-undefined
+    pkg: undefined,
+    initialCode: ''
 };
 
 export default Runner;

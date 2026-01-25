@@ -37,7 +37,7 @@ describe('useRunnerEffects hooks', () => {
     });
 
     it('getInitialTheme returns stored theme or default', () => {
-        expect(getInitialTheme()).toBe('dark'); // Default
+        expect(getInitialTheme()).toBe('dark');
         localStorage.setItem('theme', 'light');
         expect(getInitialTheme()).toBe('light');
     });

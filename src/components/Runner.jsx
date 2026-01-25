@@ -105,7 +105,20 @@ const Runner = ({ pkg, initialCode }) => {
             {/* Console */}
             <div className="runner-console">
                 <div className="runner-buttons">
-                    <button onClick={run} disabled={loading}>{loading ? '⏳ Loading...' : '▶ Run'}</button>
+                    <button onClick={run} disabled={loading}>
+                        {loading ? (
+                            <>
+                                {/* Spinner */}
+                                <svg className="spinner" viewBox="0 0 24 24" fill="none">
+                                    <circle cx="12" cy="12" r="10" stroke="#ccc" strokeWidth="4" opacity="0.25" />
+                                    <path fill="#333" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+                                </svg>
+                            </>
+                        ) : (
+                            '▶ Run'
+                        )}
+                    </button>
+
                     <button onClick={clearEditor}>📝 Clear Editor</button>
                     <button onClick={clearConsole}>🧹 Clear Console</button>
                     <button onClick={toggleTheme}>🌓 {theme === 'dark' ? 'Light' : 'Dark'} Theme</button>

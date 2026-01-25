@@ -1,4 +1,4 @@
-import { render, screen as rtlScreen, fireEvent } from '@testing-library/react';
+import { render, screen as rtlScreen, fireEvent, waitFor } from '@testing-library/react';
 import { vi } from 'vitest';
 import Runner from './Runner';
 
@@ -36,7 +36,9 @@ describe('Runner Component', () => {
 
         fireEvent.click(runButton);
         expect(runButton).toBeDisabled();
-        expect(runButton).toHaveTextContent(/loading/i);
+
+        const spinner = runButton.querySelector('svg');
+        expect(spinner).toBeInTheDocument();
 
         // --| Simulate iframe sending 'done' message
         fireEvent(window, new MessageEvent('message', { data: { type: 'done' } }));
@@ -61,6 +63,7 @@ describe('Runner Component', () => {
         expect(document.querySelector('.runner-logs')).toHaveTextContent(/hi/i);
 
         fireEvent.click(rtlScreen.getByRole('button', { name: /clear console/i }));
+
         const logsContainer = document.querySelector('.runner-logs');
         expect(logsContainer).toBeEmptyDOMElement();
     });
@@ -73,7 +76,7 @@ describe('Runner Component', () => {
         expect(document.body.className).toMatch(/light/i);
     });
 
-    it('Does not crash if Run is pressed with valid code', () => {
+    it('Does not crash if Run is pressed with valid code', async () => {
         render(<Runner pkg="test-package" initialCode="console.log('hi')" />);
 
         const runButton = rtlScreen.getByRole('button', { name: /run/i });
@@ -83,6 +86,27 @@ describe('Runner Component', () => {
         expect(logsContainer).toBeInTheDocument();
 
         fireEvent(window, new MessageEvent('message', { data: { type: 'log', args: ['hi'] } }));
-        expect(logsContainer).toHaveTextContent(/hi/i);
+        await waitFor(() => expect(logsContainer).toHaveTextContent(/hi/i));
+    });
+
+    it('Shows spinner while code is running', async () => {
+        render(<Runner pkg="test-package" initialCode="console.log('hi')" />);
+        const runButton = rtlScreen.getByRole('button', { name: /run/i });
+
+        fireEvent.click(runButton);
+        expect(runButton).toBeDisabled();
+
+        const spinner = runButton.querySelector('svg');
+        expect(spinner).toBeInTheDocument();
+
+        fireEvent(window, new MessageEvent('message', { data: { type: 'done' } }));
+
+        await waitFor(() => {
+            const spinnerCheck = runButton.querySelector('svg');
+            expect(spinnerCheck).toBeNull();
+        });
+
+        expect(runButton).not.toBeDisabled();
+        expect(runButton).toHaveTextContent('▶ Run');
     });
 });

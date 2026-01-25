@@ -80,7 +80,7 @@ const Runner = ({ pkg, initialCode }) => {
     const clearConsole = () => setLogs([]);
 
     // --| Get Vercel deployment commit
-    const commitHash = import.meta.env.VITE_VERCEL_COMMIT_SHA;
+    const commitHash = import.meta.env.VITE_COMMIT_SHA;
 
     return (
         <div className="runner-container">
@@ -180,7 +180,13 @@ const Runner = ({ pkg, initialCode }) => {
                         </a>
                         {' '}|{' '}
                         <a
-                            href={commitHash ? `https://github.com/tutyamxx/NpmRunner/commit/${commitHash}` : ''}
+                            href={commitHash ? `https://github.com/tutyamxx/NpmRunner/commit/${commitHash}` : '#'}
+                            onClick={(e) => {
+                                if (!commitHash) {
+                                    e.preventDefault();
+                                    window.location.reload();
+                                }
+                            }}
                             // eslint-disable-next-line no-undefined
                             target={commitHash ? '_blank' : undefined}
                             rel="noreferrer"

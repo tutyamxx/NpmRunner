@@ -4,7 +4,7 @@
   <img src="banner.png" alt="NpmRunner Banner" width="600" style="max-width: 100%; height: auto;" />
 </div>
 
-- 📦 **NpmRunner** is a browser-based JavaScript sandbox that lets you **explore and run npm packages directly in the browser**.
+- **NpmRunner** is a browser-based JavaScript sandbox that lets you **explore and run npm packages directly in the browser**.
 - **NOT** affiliated with `npm, Inc`.
 - **NOT** a `RunKit` replacement but you can run stuff here
 
@@ -12,23 +12,24 @@
 
 ## 🏖️ What You Can Do / Features 🧸
 
-- 🏄 Load any npm package by URL
-- 📖 Automatically fetch and render its README
-- 🧸 Auto-import sample code from README into the IDE, if present
+- 🏄 Load any npm package by `URL`
+- 📖 Automatically fetch and render its `README` with `HTML` support
+- 🧸 Auto-import sample code from `README` into the `IDE`, if present
 - 🖥️ Run JavaScript safely inside a sandboxed iframe
-- ⚡ Dynamic ESM loading, **with CommonJS (require) support**
+- ⚡ Dynamic `ESM` loading, with `CommonJS (require)` support
 - 💻 Monaco Editor (`VS Code–like experience`)
 - 🖨️ See console output and errors in real time
 - 🧹 Clear editor & clear console buttons
-- 🌗 Toggle between Dark / Light themes
+- 🌗 Toggle between `Dark` / `Light` themes
 - 🔗 Shareable URLs per package
 - 🏖️ Test packages without installing anything locally
+- 🏄 Works with almost all packages (WIP here, trying to make almost all of them load)
 
 ---
 
 ## 📝 TODO 🪁
 
-- TypeScript support
+- TypeScript support (I might or might not, WIP)
 - Add more stuff.
 
 ## ⚠️ Limitations
@@ -41,13 +42,19 @@
 
 ## 🚀 Live Usage 🏖️
 
-Visit:
+Example usage:
 
 - [https://npmrunner.vercel.app/sandbox/orc-me](https://npmrunner.vercel.app/sandbox/orc-me)
 - [https://npmrunner.vercel.app/sandbox/contains-emoji](https://npmrunner.vercel.app/sandbox/contains-emoji)
 - [https://npmrunner.vercel.app/sandbox/is-valid-domain-extension](https://npmrunner.vercel.app/sandbox/is-valid-domain-extension)
+- [https://npmrunner.vercel.app/sandbox/long](https://npmrunner.vercel.app/sandbox/long)
+- [https://npmrunner.vercel.app/sandbox/mathml-tag-names](https://npmrunner.vercel.app/sandbox/mathml-tag-names)
 
-Just replace the package name in the URL.
+Just replace the `package name` in the URL.
+
+```bash
+https://npmrunner.vercel.app/sandbox/<package name>
+```
 
 ---
 

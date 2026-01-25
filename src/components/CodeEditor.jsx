@@ -20,6 +20,7 @@ const CodeEditor = ({ code, setCode, theme = 'dark', onEditorMount }) => {
                 data-testid="monaco-editor"
                 height="100%"
                 defaultLanguage='javascript'
+                language='javascript'
                 theme={theme === 'dark' ? 'vs-dark' : 'vs'}
                 value={code ?? ''}
                 onChange={(value) => setCode(value ?? '')}

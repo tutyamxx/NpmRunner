@@ -87,7 +87,6 @@ const Runner = ({ pkg, initialCode }) => {
                     code={code}
                     setCode={setCode}
                     theme={theme}
-                    language="javascript"
                     // eslint-disable-next-line no-console
                     onEditorMount={() => console.log('✅ Editor mounted!')}
                 />

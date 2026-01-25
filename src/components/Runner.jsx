@@ -12,6 +12,7 @@ import {
 } from '../hooks/useRunnerEffects';
 import { buildImports } from '../utils/buildImports';
 import { buildIframeSrcdoc } from '../utils/buildIframeSrcdoc';
+import { parse } from 'acorn';
 
 /**
  * Runner component: executes JS code in an iframe,
@@ -54,6 +55,15 @@ const Runner = ({ pkg, initialCode }) => {
 
         if (!code || !code.trim()) {
             setNotification('⚠️ Nothing to run!');
+            setLoading(false);
+
+            return;
+        }
+
+        try {
+            parse(code, { ecmaVersion: 2026, sourceType: 'module' });
+        } catch (err) {
+            setNotification(`⚠️ Syntax Error: ${err?.message}`);
             setLoading(false);
 
             return;

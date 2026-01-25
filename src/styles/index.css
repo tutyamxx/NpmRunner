@@ -1,5 +1,3 @@
-@charset "UTF-8";
-
 :root {
     --bg: #0d1117;
     --panel: #161b22;
@@ -62,14 +60,13 @@ pre {
 }
 
 .sandbox-container {
-    min-height: 100dvh;
-    height: auto;
+    height: 100vh;
 }
 
 .sandbox-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    height: auto;
+    height: 100%;
     gap: 4px;
     min-height: 0;
 }
@@ -78,14 +75,15 @@ pre {
     padding: 16px;
     border-right: 1px solid var(--border);
     overflow-y: auto;
+    height: 100%;
     box-sizing: border-box;
     min-height: 0;
 }
 
 .runner-container {
-    display: flex;
-    flex-direction: column;
-    height: auto;
+    display: grid;
+    grid-template-rows: 1fr 1fr;
+    height: 100%;
     font-family: monospace;
     padding: 4px;
     box-sizing: border-box;
@@ -95,18 +93,19 @@ pre {
 }
 
 .runner-editor {
-    height: min(45vh, 420px);
-    min-height: 260px;
+    height: 100%;
+    min-height: 0;
 }
 
 .runner-console {
+    min-height: 0;
+    min-width: 0;
     display: flex;
     flex-direction: column;
     background-color: var(--console-bg);
     color: var(--console-text);
     padding: 4px;
     border-radius: 4px;
-    min-height: 200px;
 }
 
 .runner-buttons {
@@ -114,11 +113,7 @@ pre {
     flex-wrap: wrap;
     justify-content: center;
     gap: 0.5rem;
-    padding: 8px;
-    position: sticky;
-    bottom: 0;
-    background: var(--panel);
-    z-index: 5;
+    padding-bottom: 6px;
 }
 
 .runner-buttons button {
@@ -136,13 +131,11 @@ pre {
 
 .runner-logs {
     flex: 1;
-    overflow-y: auto;
-    min-height: 0;
+    overflow: hidden auto;
     margin: 0;
     line-height: 1.4;
     white-space: pre-wrap;
     overflow-wrap: anywhere;
-    -webkit-overflow-scrolling: touch;
 }
 
 .runner-log {
@@ -209,22 +202,6 @@ pre {
         border-bottom: 1px solid var(--border);
     }
 
-    .sandbox-container {
-        overflow-y: auto;
-    }
-
-    .runner-container {
-        height: auto;
-    }
-
-    .runner-console {
-        min-height: 200px;
-    }
-
-    .runner-logs {
-        max-height: 60dvh;
-    }
-
     .runner-buttons button {
         width: 100%;
         max-width: 300px;
@@ -244,9 +221,21 @@ pre {
         margin-top: 2px;
     }
 
+    .runner-console {
+        flex: 1.2;
+        padding: 8px;
+        font-size: 14px;
+        border-radius: 6px;
+        background-color: #222;
+    }
+
     .runner-log,
     .runner-log-error {
         padding: 6px 4px;
+    }
+
+    .runner-logs {
+        max-height: 50vh;
     }
 }
 

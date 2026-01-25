@@ -20,6 +20,7 @@ const CodeEditor = ({ code, setCode, theme = 'dark', onEditorMount }) => (
             theme={`vs${theme === 'dark' ? '-dark' : ''}`}
             value={code ?? ''}
             onChange={(value) => setCode(value ?? '')}
+            onContextMenu={(e) => e.preventDefault()}
             onMount={(editor, monaco) => {
                 if (onEditorMount) {
                     onEditorMount(editor, monaco);
@@ -27,6 +28,7 @@ const CodeEditor = ({ code, setCode, theme = 'dark', onEditorMount }) => (
 
                 monaco.editor.setTheme(theme === 'dark' ? 'vs-dark' : 'vs');
                 editor.layout();
+                editor.updateOptions({ contextmenu: false });
             }}
             options={{
                 automaticLayout: true,

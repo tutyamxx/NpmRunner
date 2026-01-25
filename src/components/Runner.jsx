@@ -210,7 +210,14 @@ const Runner = ({ pkg, initialCode }) => {
                     </div>
                 </div>
 
-                <iframe ref={iframeRef} sandbox="allow-scripts" style={{ display: 'none' }} />
+                <iframe
+                    ref={iframeRef}
+                    id="runner-iframe"
+                    title="Runner Iframe"
+                    sandbox="allow-scripts"
+                    style={{ display: 'none' }}
+                    aria-hidden="true"
+                />
             </div>
         </div>
     );

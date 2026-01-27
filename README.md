@@ -2,35 +2,36 @@
 
 <div align="center">
   <img src="banner.png" alt="NpmRunner Banner" width="600" style="max-width: 100%; height: auto;" />
+
+  <!-- CI/CD workflow badge 🏖️ -->
+  <a href="https://github.com/tutyamxx/NpmRunner/actions/workflows/ci.yml">
+    <img src="https://github.com/tutyamxx/NpmRunner/actions/workflows/ci.yml/badge.svg" alt="CI/CD">
+  </a>
+
+  <!-- Stylelint, ESLint, and Tests job badges 🏖️ -->
+  <img src="https://img.shields.io/github/actions/workflow/status/tutyamxx/NpmRunner/ci.yml?job=stylelint&label=Stylelint&color=brightgreen" alt="Stylelint">
+  <img src="https://img.shields.io/github/actions/workflow/status/tutyamxx/NpmRunner/ci.yml?job=eslint&label=ESLint&color=brightgreen" alt="ESLint">
+  <img src="https://img.shields.io/github/actions/workflow/status/tutyamxx/NpmRunner/ci.yml?job=tests&label=Tests&color=brightgreen" alt="Tests">
 </div>
 
-- **NpmRunner** is a browser-based JavaScript sandbox that lets you **explore and run npm packages directly in the browser**.
+- **NpmRunner** is a `browser-based` JavaScript 🏖️ `sandbox` that lets you **explore and run npm packages directly in the browser**.
 - **NOT** affiliated with `npm, Inc`.
 - **NOT** a `RunKit` replacement but you can run stuff here
 
----
+## 🏖️ What You Can Do / Features
 
-## 🏖️ What You Can Do / Features 🧸
-
-- 🏄 Load any npm package by `URL`
-- 📖 Automatically fetch and render its `README` with `HTML` support
-- 🧸 Auto-import sample code from `README` into the `IDE`, if present
-- 🖥️ Run JavaScript safely inside a sandboxed iframe
-- ⚡ Dynamic `ESM` loading, with `CommonJS (require)` support
-- 💻 Monaco Editor (`VS Code–like experience`)
-- 🖨️ See console output and errors in real time
-- 🧹 Clear editor & clear console buttons
-- 🌗 Toggle between `Dark` / `Light` themes
-- 🔗 Shareable URLs per package
+- 🏖️ Load any npm package by `URL`
+- 🏖️ Automatically fetch and render its `README` with `HTML` support
+- 🏖️ Auto-import sample code from `README` into the `IDE`, if present
+- 🏖️ Run JavaScript safely inside a sandboxed iframe
+- 🏖️ Dynamic `ESM` loading, with `CommonJS (require)` support
+- 🏖️ Monaco Editor (`VS Code–like experience`)
+- 🏖️ See console output and errors in real time
+- 🏖️ Clear editor & clear console buttons
+- 🏖️ Toggle between `Dark` / `Light` themes
+- 🏖️ Shareable URLs per package
 - 🏖️ Test packages without installing anything locally
-- 🏄 Works with almost all packages (WIP here, trying to make almost all of them load)
-
----
-
-## 📝 TODO 🪁
-
-- TypeScript support (I might or might not, WIP)
-- Add more stuff.
+- 🏖️ Works with almost all packages (WIP here, trying to make almost all of them load)
 
 ## ⚠️ Limitations
 
@@ -38,9 +39,12 @@
 - Some packages expect a Node runtime
 - Not all `README` include runnable browser examples
 
----
+## 🪁 TODO
 
-## 🚀 Live Usage 🏖️
+- TypeScript support (I might or might not, WIP)
+- Add more stuff.
+
+## 🚀 Live Usage
 
 Example usage:
 
@@ -56,10 +60,7 @@ Just replace the `package name` in the URL.
 https://npmrunner.vercel.app/sandbox/<package name>
 ```
 
----
-
-
-## 🧑‍💻 Run Locally 🏖️
+## 🧑‍💻 Run Locally
 
 ### 1. Clone the repo
 
@@ -83,8 +84,6 @@ npm run dev
 Then open:
 
 http://localhost:5173/
-
----
 
 ## 💡 Disclaimer
 

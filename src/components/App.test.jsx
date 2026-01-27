@@ -45,14 +45,4 @@ describe('App Routing', () => {
         renderAt('/sandbox//');
         expect(rtlScreen.getByText('Sandbox Component')).toBeInTheDocument();
     });
-
-    it('Unknown routes do not render Sandbox', () => {
-        renderAt('/unknown-route');
-        expect(rtlScreen.queryByText('Sandbox Component')).not.toBeInTheDocument();
-    });
-
-    it('Root / does not render Sandbox', () => {
-        renderAt('/');
-        expect(rtlScreen.queryByText('Sandbox Component')).not.toBeInTheDocument();
-    });
 });

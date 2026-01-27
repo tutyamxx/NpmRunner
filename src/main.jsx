@@ -13,6 +13,7 @@ root.render(
         <BrowserRouter>
             <Routes>
                 <Route path="/sandbox/:pkg?" element={<Sandbox />} />
+                <Route path="/" element={<Navigate to={`/sandbox/${defaultPkg}`} replace />} />
                 <Route path="*" element={<Navigate to={`/sandbox/${defaultPkg}`} replace />} />
             </Routes>
         </BrowserRouter>

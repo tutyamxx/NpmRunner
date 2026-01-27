@@ -4,6 +4,7 @@
   <a href="https://github.com/tutyamxx/NpmRunner/actions/workflows/ci.yml">
     <img src="https://github.com/tutyamxx/NpmRunner/actions/workflows/ci.yml/badge.svg" alt="CI/CD">
   </a>
+  <br />
 
   <!-- Stylelint, ESLint, and Tests job badges 🏖️ -->
   <img src="https://img.shields.io/github/actions/workflow/status/tutyamxx/NpmRunner/ci.yml?job=stylelint&label=Stylelint&color=brightgreen" alt="Stylelint">

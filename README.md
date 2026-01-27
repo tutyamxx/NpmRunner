@@ -1,8 +1,5 @@
 # 📦 NpmRunner
-
 <div align="center">
-  <img src="banner.png" alt="NpmRunner Banner" width="600" style="max-width: 100%; height: auto;" />
-
   <!-- CI/CD workflow badge 🏖️ -->
   <a href="https://github.com/tutyamxx/NpmRunner/actions/workflows/ci.yml">
     <img src="https://github.com/tutyamxx/NpmRunner/actions/workflows/ci.yml/badge.svg" alt="CI/CD">
@@ -12,6 +9,10 @@
   <img src="https://img.shields.io/github/actions/workflow/status/tutyamxx/NpmRunner/ci.yml?job=stylelint&label=Stylelint&color=brightgreen" alt="Stylelint">
   <img src="https://img.shields.io/github/actions/workflow/status/tutyamxx/NpmRunner/ci.yml?job=eslint&label=ESLint&color=brightgreen" alt="ESLint">
   <img src="https://img.shields.io/github/actions/workflow/status/tutyamxx/NpmRunner/ci.yml?job=tests&label=Tests&color=brightgreen" alt="Tests">
+</div>
+
+<div align="center">
+  <img src="banner.png" alt="NpmRunner Banner" width="600" style="max-width: 100%; height: auto;" />
 </div>
 
 - **NpmRunner** is a `browser-based` JavaScript 🏖️ `sandbox` that lets you **explore and run npm packages directly in the browser**.

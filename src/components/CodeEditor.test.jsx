@@ -52,7 +52,7 @@ describe('Code Editor', () => {
         expect(monaco.editor.setTheme).toHaveBeenCalledWith('vs');
 
         render(<CodeEditor code={code} setCode={setCode} theme="dark" onEditorMount={onEditorMount} />);
-        [, monaco] = onEditorMount.mock.calls[1]; // Second call
+        [, monaco] = onEditorMount.mock.calls[1];
         expect(monaco.editor.setTheme).toHaveBeenCalledWith('vs-dark');
     });
 
@@ -64,5 +64,35 @@ describe('Code Editor', () => {
         render(<CodeEditor code={code} setCode={setCode} theme="dark" onEditorMount={onEditorMount} />);
         const [editor] = onEditorMount.mock.calls[0];
         expect(editor.layout).toHaveBeenCalled();
+    });
+
+    it('Defaults to dark theme if no theme provided', () => {
+        const code = '';
+        const setCode = vi.fn();
+        const onEditorMount = vi.fn();
+
+        render(<CodeEditor code={code} setCode={setCode} onEditorMount={onEditorMount} />);
+        const [, monaco] = onEditorMount.mock.calls[0];
+
+        expect(monaco.editor.setTheme).toHaveBeenCalledWith('vs-dark');
+    });
+
+    it('Disables editor context menu via updateOptions', () => {
+        const code = '';
+        const setCode = vi.fn();
+        const onEditorMount = vi.fn();
+
+        render(<CodeEditor code={code} setCode={setCode} theme="dark" onEditorMount={onEditorMount} />);
+        const [editor] = onEditorMount.mock.calls[0];
+
+        expect(editor.updateOptions).toHaveBeenCalledWith({ contextmenu: false });
+    });
+
+    it('Renders empty string if code prop is null or undefined', () => {
+        const setCode = vi.fn();
+
+        render(<CodeEditor code={null} setCode={setCode} />);
+        const textarea = document.querySelector('textarea');
+        expect(textarea.value).toBe('');
     });
 });

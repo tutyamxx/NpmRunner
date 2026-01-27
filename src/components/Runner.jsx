@@ -3,13 +3,12 @@ import PropTypes from 'prop-types';
 import CodeEditor from './CodeEditor';
 import { version } from '../../package.json';
 import {
-    useThemeEffect,
-    getInitialTheme,
     useAutoHideNotification,
     useIframeListener,
     useInitialCodeUpdate,
     defaultPkg
 } from '../hooks/useRunnerEffects';
+import { useTheme } from '../context/ThemeProvider';
 import { buildImports } from '../utils/buildImports';
 import { buildIframeSrcdoc } from '../utils/buildIframeSrcdoc';
 import { parse } from 'acorn';
@@ -36,11 +35,8 @@ const Runner = ({ pkg, initialCode }) => {
     const [code, setCode] = useState(initialCode ?? `import mod from '${currentPkg}';\nconsole.log(mod);`);
     const [loading, setLoading] = useState(false);
 
-    // --| Theme related
-    const [theme, setTheme] = useState(getInitialTheme());
-    useThemeEffect(theme);
-
-    const toggleTheme = () => setTheme(prev => (prev === 'dark' ? 'light' : 'dark'));
+    // --| Theme related (global via ThemeProvider)
+    const { theme, toggleTheme } = useTheme();
 
     useAutoHideNotification(notification, setNotification);
     useIframeListener(setLogs, setLoading);

@@ -1,6 +1,7 @@
 import { render, screen as rtlScreen, fireEvent, waitFor } from '@testing-library/react';
 import { vi } from 'vitest';
 import Runner from './Runner';
+import { ThemeProvider } from '../context/ThemeProvider';
 
 vi.mock('@monaco-editor/react', () => ({
     default: ({ value, onChange }) => (
@@ -12,16 +13,19 @@ vi.mock('@monaco-editor/react', () => ({
     )
 }));
 
+// --| Wrapper helper
+const renderWithTheme = (ui) => render(<ThemeProvider>{ui}</ThemeProvider>);
+
 describe('Runner Component', () => {
     beforeEach(() => vi.restoreAllMocks());
 
     it('Renders editor with initial code', () => {
-        render(<Runner pkg="test-package" initialCode="console.log('hi')" />);
+        renderWithTheme(<Runner pkg="test-package" initialCode="console.log('hi')" />);
         expect(rtlScreen.getByTestId('monaco-editor')).toHaveValue('console.log(\'hi\')');
     });
 
     it('Shows error notification if code is empty and Run is pressed', () => {
-        render(<Runner pkg="test-package" initialCode="" />);
+        renderWithTheme(<Runner pkg="test-package" initialCode="" />);
 
         const runButton = rtlScreen.getByRole('button', { name: /run/i });
         fireEvent.click(runButton);
@@ -31,7 +35,7 @@ describe('Runner Component', () => {
     });
 
     it('Disables Run button while code is running', () => {
-        render(<Runner pkg="test-package" initialCode="console.log('hi')" />);
+        renderWithTheme(<Runner pkg="test-package" initialCode="console.log('hi')" />);
         const runButton = rtlScreen.getByRole('button', { name: /run/i });
 
         fireEvent.click(runButton);
@@ -47,14 +51,13 @@ describe('Runner Component', () => {
     });
 
     it('Clears editor when Clear Editor is clicked', () => {
-        render(<Runner pkg="test-package" initialCode="console.log('hi')" />);
-
+        renderWithTheme(<Runner pkg="test-package" initialCode="console.log('hi')" />);
         fireEvent.click(rtlScreen.getByText(/clear editor/i));
         expect(rtlScreen.getByTestId('monaco-editor')).toHaveValue('');
     });
 
     it('Clears console when Clear Console is clicked', () => {
-        render(<Runner pkg="test-package" initialCode="console.log('hi')" />);
+        renderWithTheme(<Runner pkg="test-package" initialCode="console.log('hi')" />);
 
         const runButton = rtlScreen.getByRole('button', { name: /run/i });
         fireEvent.click(runButton);
@@ -63,13 +66,11 @@ describe('Runner Component', () => {
         expect(document.querySelector('.runner-logs')).toHaveTextContent(/hi/i);
 
         fireEvent.click(rtlScreen.getByRole('button', { name: /clear console/i }));
-
-        const logsContainer = document.querySelector('.runner-logs');
-        expect(logsContainer).toBeEmptyDOMElement();
+        expect(document.querySelector('.runner-logs')).toBeEmptyDOMElement();
     });
 
     it('Toggles theme when Light Theme button is clicked', () => {
-        render(<Runner pkg="test-package" initialCode="console.log('hi')" />);
+        renderWithTheme(<Runner pkg="test-package" initialCode="console.log('hi')" />);
 
         const themeButton = rtlScreen.getByRole('button', { name: /light theme/i });
         fireEvent.click(themeButton);
@@ -77,7 +78,7 @@ describe('Runner Component', () => {
     });
 
     it('Does not crash if Run is pressed with valid code', async () => {
-        render(<Runner pkg="test-package" initialCode="console.log('hi')" />);
+        renderWithTheme(<Runner pkg="test-package" initialCode="console.log('hi')" />);
 
         const runButton = rtlScreen.getByRole('button', { name: /run/i });
         fireEvent.click(runButton);
@@ -90,7 +91,7 @@ describe('Runner Component', () => {
     });
 
     it('Shows spinner while code is running', async () => {
-        render(<Runner pkg="test-package" initialCode="console.log('hi')" />);
+        renderWithTheme(<Runner pkg="test-package" initialCode="console.log('hi')" />);
         const runButton = rtlScreen.getByRole('button', { name: /run/i });
 
         fireEvent.click(runButton);

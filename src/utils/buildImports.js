@@ -25,10 +25,14 @@ export const buildImports = (code = '') => {
     let transformedCode = code?.replace(importRegex, '')?.replace(requireRegex, '');
 
     // --| Transform remaining inline require() calls
-    transformedCode = transformedCode?.replace(/require\(['"](.*?)['"]\)/g, (_, pkgName) =>
-        // eslint-disable-next-line implicit-arrow-linebreak
-        `(await import('https://esm.sh/${encodeURIComponent(pkgName)}@latest?bundle'))?.default \
-        ?? (await import('https://esm.sh/${encodeURIComponent(pkgName)}@latest?bundle'))`
+    transformedCode = transformedCode?.replace(
+        /require\(['"](.*?)['"]\)/g,
+        (_, pkgName) => {
+            const encodedPkg = encodeURIComponent(pkgName);
+            const url = `https://esm.sh/${encodedPkg}@latest?bundle`;
+
+            return `(await import('${url}'))?.default ?? (await import('${url}'))`;
+        }
     );
 
     // --| Wrapper to try multiple CDNs for a package

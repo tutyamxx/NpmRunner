@@ -22,6 +22,17 @@ export const buildIframeSrcdoc = (importLines, transformedCode) => {
         }
     `;
 
+    // --| Escape backslashes, escape backticks, escape template literal interpolation, remove carriage returns, line separators, paragraph separators
+    const escapeForTemplateLiteral = (code) => code
+        ?.replace(/\\/g, '\\\\')
+        ?.replace(/`/g, '\\`')
+        ?.replace(/\$\{/g, '\\${')
+        ?.replace(/\r/g, '')
+        ?.replace(/\u2028/g, '\\u2028')
+        ?.replace(/\u2029/g, '\\u2029');
+
+    const safeUserCode = escapeForTemplateLiteral(transformedCode ?? '');
+
     return `
         <!DOCTYPE html>
         <html>
@@ -41,6 +52,7 @@ export const buildIframeSrcdoc = (importLines, transformedCode) => {
                                 ? safeStringify(arg)
                                 : String(arg)
                         );
+
                         parent.postMessage({ type: 'log', args: formattedArgs }, '*');
                         log(...args);
                     };
@@ -52,6 +64,7 @@ export const buildIframeSrcdoc = (importLines, transformedCode) => {
                                 ? safeStringify(arg)
                                 : String(arg)
                         );
+
                         parent.postMessage({ type: 'error', args: formattedArgs }, '*');
                         error(...args);
                     };
@@ -61,9 +74,9 @@ export const buildIframeSrcdoc = (importLines, transformedCode) => {
 
                     // --| Then run the user code
                     try {
-                        ${transformedCode?.split('\n')?.map(line => `        ${line}`)?.join('\n')}
+                        ${safeUserCode?.split('\n')?.map(line => `        ${line}`)?.join('\n')}
                     } catch (e) {
-                        console.error(e);
+                        parent.postMessage({ type: 'error', args: [e?.message || String(e)] }, '*');
                     } finally {
                         // --| Notify parent that execution is done
                         parent.postMessage({ type: 'done' }, '*');

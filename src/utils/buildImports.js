@@ -27,7 +27,7 @@ export const buildImports = (code = '') => {
     // --| Remove original import/require statements
     let transformedCode = code?.replace(importRegex, '')?.replace(requireRegex, '');
 
-    // --| Transform remaining inline require() calls
+    // --| Transform remaining inline require() calls into dynamic imports
     transformedCode = transformedCode?.replace(
         /require\(['"](.*?)['"]\)/g,
         (_, pkgName) => {
@@ -56,16 +56,18 @@ export const buildImports = (code = '') => {
         }
     `;
 
-    // --| Generate import lines
+    // --| Generate import lines dynamically, handling default + named + destructured imports
     const importLines = imports?.map(({ packageName, specifier }) => {
         const trimmedSpecifier = specifier?.trim();
         const safeVar = trimmedSpecifier?.replace(/\W/g, '_');
 
         // --| Destructured imports
         if (trimmedSpecifier?.startsWith('{') && trimmedSpecifier?.endsWith('}')) {
+            const names = trimmedSpecifier?.replace(/[{}]/g, '')?.trim();
+
             return `
                 ${importWrapper('skypackModule', packageName)}
-                const { ${trimmedSpecifier?.replace(/[{}]/g, '')} } = skypackModule?.default ?? skypackModule ?? {};
+                const { ${names} } = skypackModule?.default ?? skypackModule ?? {};
             `;
         }
 

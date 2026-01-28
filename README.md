@@ -50,16 +50,16 @@
 
 Example usage:
 
-- [https://npmrunner.vercel.app/sandbox/orc-me](https://npmrunner.vercel.app/sandbox/orc-me)
-- [https://npmrunner.vercel.app/sandbox/contains-emoji](https://npmrunner.vercel.app/sandbox/contains-emoji)
-- [https://npmrunner.vercel.app/sandbox/is-valid-domain-extension](https://npmrunner.vercel.app/sandbox/is-valid-domain-extension)
-- [https://npmrunner.vercel.app/sandbox/long](https://npmrunner.vercel.app/sandbox/long)
-- [https://npmrunner.vercel.app/sandbox/mathml-tag-names](https://npmrunner.vercel.app/sandbox/mathml-tag-names)
+- [https://npmrunner.com/sandbox/orc-me](https://npmrunner.com/sandbox/orc-me)
+- [https://npmrunner.com/sandbox/contains-emoji](https://npmrunner.com/sandbox/contains-emoji)
+- [https://npmrunner.com/sandbox/is-valid-domain-extension](https://npmrunner.com/sandbox/is-valid-domain-extension)
+- [https://npmrunner.com/sandbox/long](https://npmrunner.com/sandbox/long)
+- [https://npmrunner.com/sandbox/mathml-tag-names](https://npmrunner.com/sandbox/mathml-tag-names)
 
 Just replace the `package name` in the URL.
 
 ```bash
-https://npmrunner.vercel.app/sandbox/<package name>
+https://npmrunner.com/sandbox/<package name>
 ```
 
 ## 🧑‍💻 Run Locally

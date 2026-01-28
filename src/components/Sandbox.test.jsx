@@ -132,21 +132,19 @@ describe('Sandbox Component', () => {
             </MemoryRouter>
         );
 
-        await waitFor(() => {
-            expect(rtlScreen.getByText(/Runner Component: no-js \| import mod from 'no-js';/i)).toBeInTheDocument();
-        });
+        await waitFor(() => expect(rtlScreen.getByText(/Runner Component: no-js \| import mod from 'no-js';/i)).toBeInTheDocument());
     });
 
     it('Handles simple require() statements', async () => {
         globalThis.fetch = mockFetch({
             readme: `
-            # Require Test
+                # Require Test
 
-            \`\`\`js
-            const lodash = require('lodash');
-            console.log(lodash);
-            \`\`\`
-        `
+                \`\`\`js
+                const lodash = require('lodash');
+                console.log(lodash);
+                \`\`\`
+            `
         });
 
         render(
@@ -163,13 +161,13 @@ describe('Sandbox Component', () => {
     it('Handles destructured require() statements', async () => {
         globalThis.fetch = mockFetch({
             readme: `
-            # Destructured Require Test
+                # Destructured Require Test
 
-            \`\`\`js
-            const { map, filter } = require('lodash');
-            console.log(map, filter);
-            \`\`\`
-        `
+                \`\`\`js
+                const { map, filter } = require('lodash');
+                console.log(map, filter);
+                \`\`\`
+            `
         });
 
         render(
@@ -186,12 +184,12 @@ describe('Sandbox Component', () => {
     it('Uses default code if README has require() with no imports', async () => {
         globalThis.fetch = mockFetch({
             readme: `
-            # Require Without Import
+                # Require Without Import
 
-            \`\`\`js
-            console.log('Hello CommonJS');
-            \`\`\`
-        `
+                \`\`\`js
+                console.log('Hello CommonJS');
+                \`\`\`
+            `
         });
 
         render(
@@ -208,18 +206,18 @@ describe('Sandbox Component', () => {
     it('Selects first import block even if a require block appears first', async () => {
         globalThis.fetch = mockFetch({
             readme: `
-            # Mixed Imports
+                # Mixed Imports
 
-            \`\`\`js
-            const lodash = require('lodash');
-            console.log(lodash);
-            \`\`\`
+                \`\`\`js
+                const lodash = require('lodash');
+                console.log(lodash);
+                \`\`\`
 
-            \`\`\`js
-            import axios from 'axios';
-            console.log(axios);
-            \`\`\`
-        `
+                \`\`\`js
+                import axios from 'axios';
+                console.log(axios);
+                \`\`\`
+            `
         });
 
         render(

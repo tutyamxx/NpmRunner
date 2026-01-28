@@ -8,7 +8,10 @@ vi.mock('@monaco-editor/react', () => ({
     default: ({ onMount, value }) => {
         const fakeEditor = { layout: vi.fn(), focus: vi.fn(), updateOptions: vi.fn() };
         const fakeMonaco = { editor: { setTheme: vi.fn() } };
-        if (onMount) onMount(fakeEditor, fakeMonaco);
+
+        if (onMount) {
+            onMount(fakeEditor, fakeMonaco);
+        }
 
         return <textarea defaultValue={value} readOnly />;
     }
@@ -94,5 +97,63 @@ describe('Code Editor', () => {
         render(<CodeEditor code={null} setCode={setCode} />);
         const textarea = document.querySelector('textarea');
         expect(textarea.value).toBe('');
+    });
+
+    it('Does not crash if onEditorMount is not provided', () => {
+        const setCode = vi.fn();
+
+        expect(() => render(<CodeEditor code="test" setCode={setCode} theme="dark" />)).not.toThrow();
+    });
+
+    it('Updates Monaco theme when theme prop changes', () => {
+        const setCode = vi.fn();
+        const onEditorMount = vi.fn();
+
+        const { rerender } = render(<CodeEditor code="" setCode={setCode} theme="light" onEditorMount={onEditorMount} />);
+
+        let [, monaco] = onEditorMount.mock.calls[0];
+        expect(monaco.editor.setTheme).toHaveBeenCalledWith('vs');
+
+        rerender(<CodeEditor code="" setCode={setCode} theme="dark" onEditorMount={onEditorMount} />);
+
+        [, monaco] = onEditorMount.mock.calls[1];
+        expect(monaco.editor.setTheme).toHaveBeenCalledWith('vs-dark');
+    });
+
+    it('Does not call editor.layout again on re-render', () => {
+        const setCode = vi.fn();
+        const onEditorMount = vi.fn();
+
+        const { rerender } = render(<CodeEditor code="" setCode={setCode} theme="dark" onEditorMount={onEditorMount} />);
+
+        const [editor] = onEditorMount.mock.calls[0];
+        expect(editor.layout).toHaveBeenCalledTimes(1);
+
+        rerender(<CodeEditor code="new" setCode={setCode} theme="dark" onEditorMount={onEditorMount} />);
+
+        expect(editor.layout).toHaveBeenCalledTimes(1);
+    });
+
+    it('Disables context menu only once on mount', () => {
+        const setCode = vi.fn();
+        const onEditorMount = vi.fn();
+
+        const { rerender } = render(<CodeEditor code="" setCode={setCode} theme="dark" onEditorMount={onEditorMount} />);
+
+        const [editor] = onEditorMount.mock.calls[0];
+        expect(editor.updateOptions).toHaveBeenCalledTimes(1);
+
+        rerender(<CodeEditor code="abc" setCode={setCode} theme="dark" onEditorMount={onEditorMount} />);
+
+        expect(editor.updateOptions).toHaveBeenCalledTimes(1);
+    });
+
+    it('Passes empty string to editor when code is null', () => {
+        const setCode = vi.fn();
+
+        render(<CodeEditor code={null} setCode={setCode} />);
+        const textarea = document.querySelector('textarea');
+
+        expect(textarea.defaultValue).toBe('');
     });
 });

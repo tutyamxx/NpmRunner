@@ -17,7 +17,7 @@ const CodeEditor = ({ code, setCode, theme = 'dark', onEditorMount }) => (
             height="100%"
             defaultLanguage='javascript'
             language='javascript'
-            theme={`vs${theme === 'dark' ? '-dark' : ''}`}
+            theme={theme === 'dark' ? 'vs-dark' : 'vs'}
             value={code ?? ''}
             onChange={(value) => setCode(value ?? '')}
             onContextMenu={(e) => e.preventDefault()}

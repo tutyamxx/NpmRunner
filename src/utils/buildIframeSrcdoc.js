@@ -22,17 +22,6 @@ export const buildIframeSrcdoc = (importLines, transformedCode) => {
         }
     `;
 
-    // --| Escape backslashes, escape backticks, escape template literal interpolation, remove carriage returns, line separators, paragraph separators
-    const escapeForTemplateLiteral = (code) => code
-        ?.replace(/\\/g, '\\\\')
-        ?.replace(/`/g, '\\`')
-        ?.replace(/\$\{/g, '\\${')
-        ?.replace(/\r/g, '')
-        ?.replace(/\u2028/g, '\\u2028')
-        ?.replace(/\u2029/g, '\\u2029');
-
-    const safeUserCode = escapeForTemplateLiteral(transformedCode ?? '');
-
     return `
         <!DOCTYPE html>
         <html>
@@ -74,7 +63,7 @@ export const buildIframeSrcdoc = (importLines, transformedCode) => {
 
                     // --| Then run the user code
                     try {
-                        ${safeUserCode?.split('\n')?.map(line => `        ${line}`)?.join('\n')}
+                        ${transformedCode?.split('\n')?.map(line => `        ${line}`)?.join('\n')}
                     } catch (e) {
                         parent.postMessage({ type: 'error', args: [e?.message || String(e)] }, '*');
                     } finally {

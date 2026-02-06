@@ -13,9 +13,11 @@ export default defineConfig({
     base: '/',
     test: {
         globals: true,
+        provider: 'istanbul',
         environment: 'jsdom',
         setupFiles: './src/setupTests.js',
         include: ['**/*.{test,spec}.{js,ts,jsx,tsx}'],
+        exclude: ['node_modules/', 'test/'],
         reporters: ['tree'],
         silent: false
     }

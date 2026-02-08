@@ -110,4 +110,30 @@ describe('Runner Component', () => {
         expect(runButton).not.toBeDisabled();
         expect(runButton).toHaveTextContent('▶ Run');
     });
+
+    it('Uses defaultPkg when pkg prop is not provided', () => {
+        renderWithTheme(<Runner initialCode="console.log('hi')" />);
+        expect(rtlScreen.getByTestId('monaco-editor')).toHaveValue('console.log(\'hi\')');
+
+        const runButton = rtlScreen.getByRole('button', { name: /run/i });
+        fireEvent.click(runButton);
+        expect(document.querySelector('.runner-logs')).toBeInTheDocument();
+    });
+
+    it('Uses default initial code when initialCode is not provided', () => {
+        renderWithTheme(<Runner pkg="my-pkg" />);
+
+        const editor = rtlScreen.getByTestId('monaco-editor');
+        expect(editor).toHaveValue('import mod from \'my-pkg\';\nconsole.log(mod);');
+    });
+
+    it('Shows a notification and stops loading if user code has a syntax error', () => {
+        renderWithTheme(<Runner pkg="test-package" initialCode="!!invalid code!!" />);
+
+        const runButton = rtlScreen.getByRole('button', { name: /run/i });
+        fireEvent.click(runButton);
+
+        expect(rtlScreen.getByText(/Syntax Error:/i)).toBeInTheDocument();
+        expect(runButton).not.toBeDisabled();
+    });
 });

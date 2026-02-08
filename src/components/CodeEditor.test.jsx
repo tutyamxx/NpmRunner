@@ -1,19 +1,25 @@
-import { render } from '@testing-library/react';
+import { render, fireEvent } from '@testing-library/react';
 import { vi } from 'vitest';
 import CodeEditor from './CodeEditor';
 
 // --| Mock monaco-editor-react to avoid loading real editor
 vi.mock('@monaco-editor/react', () => ({
     __esModule: true,
-    default: ({ onMount, value }) => {
+    default: ({ onMount, value, onChange, onContextMenu }) => {
         const fakeEditor = { layout: vi.fn(), focus: vi.fn(), updateOptions: vi.fn() };
         const fakeMonaco = { editor: { setTheme: vi.fn() } };
 
-        if (onMount) {
-            onMount(fakeEditor, fakeMonaco);
-        }
+        if (onMount) onMount(fakeEditor, fakeMonaco);
 
-        return <textarea defaultValue={value} readOnly />;
+        return (
+            <textarea
+                defaultValue={value}
+                readOnly
+                data-testid="monaco-editor-mock"
+                onChange={(e) => onChange?.(e.target.value)}
+                onContextMenu={(e) => onContextMenu?.(e)}
+            />
+        );
     }
 }));
 
@@ -155,5 +161,29 @@ describe('Code Editor', () => {
         const textarea = document.querySelector('textarea');
 
         expect(textarea.defaultValue).toBe('');
+    });
+
+    it('Calls onChange and updates code correctly', () => {
+        const setCode = vi.fn();
+
+        const { getByTestId } = render(<CodeEditor code="" setCode={setCode} />);
+        const textarea = getByTestId('monaco-editor-mock');
+
+        fireEvent.change(textarea, { target: { value: 'new code' } });
+        expect(setCode).toHaveBeenCalledWith('new code');
+
+        fireEvent.change(textarea, { target: { value: null } });
+        expect(setCode).toHaveBeenCalledWith('');
+    });
+
+    it('Calls setCode when onChange is triggered', () => {
+        const setCode = vi.fn();
+        const { getByTestId } = render(<CodeEditor code="" setCode={setCode} />);
+
+        const textarea = getByTestId('monaco-editor-mock');
+
+        // --| Simulate typing
+        fireEvent.change(textarea, { target: { value: 'new code' } });
+        expect(setCode).toHaveBeenCalledWith('new code');
     });
 });

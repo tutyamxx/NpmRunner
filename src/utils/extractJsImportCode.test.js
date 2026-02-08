@@ -139,4 +139,11 @@ describe('extractJsImportCode', () => {
 
         expect(result).toEqual(['import a from \'a\';', 'import b from \'b\';']);
     });
+
+    it('Triggers empty string fallback for code block with undefined capture', () => {
+        const markdownTest = '```js\n```';
+        const result = extractJsImportCode(markdownTest);
+
+        expect(result).toEqual([]);
+    });
 });

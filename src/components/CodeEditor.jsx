@@ -20,19 +20,26 @@ const CodeEditor = ({ code, setCode, theme = 'dark', onEditorMount }) => (
             theme={theme === 'dark' ? 'vs-dark' : 'vs'}
             value={code ?? ''}
             onChange={(value) => setCode(value ?? '')}
-            onContextMenu={(e) => e.preventDefault()}
+            onContextMenu={(e) => e?.preventDefault()}
             onMount={(editor, monaco) => {
-                if (onEditorMount) {
-                    onEditorMount(editor, monaco);
-                }
+                try {
+                    if (onEditorMount) {
+                        onEditorMount(editor, monaco);
+                    }
 
-                monaco.editor.setTheme(theme === 'dark' ? 'vs-dark' : 'vs');
-                editor.layout();
-                editor.updateOptions({ contextmenu: false });
+                    monaco.editor.setTheme(theme === 'dark' ? 'vs-dark' : 'vs');
+                    editor.layout();
+                    editor.updateOptions({ contextmenu: false });
+                } catch (error) {
+                    if (import.meta.env.DEV) {
+                        // eslint-disable-next-line no-console
+                        console.error(error);
+                    }
+                }
             }}
             options={{
                 automaticLayout: true,
-                contextmenu: true,
+                contextmenu: false,
                 minimap: { enabled: false },
                 fontSize: 14,
                 scrollBeyondLastLine: false,

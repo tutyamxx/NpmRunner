@@ -1,5 +1,6 @@
 # Auto detect text files and perform LF normalization
 * text=auto
 
-# Prevent git from converting linebreaks in .js files
-*.js text eol=lf
+# Force LF for JS and JSX files
+*.js  text eol=lf
+*.jsx text eol=lf

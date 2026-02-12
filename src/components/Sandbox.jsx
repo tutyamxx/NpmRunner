@@ -99,7 +99,7 @@ const Sandbox = () => {
                                     onMouseDown={() => handleSelect(r?.package?.name ?? '')}
                                     className="search-result-item"
                                 >
-                                    📦 {r?.package?.name ?? 'Unknown'}{r?.package?.name ?? 'Unknown'}
+                                    📦 {r?.package?.name ?? 'Unknown'}
                                 </li>
                             ))}
                         </ul>

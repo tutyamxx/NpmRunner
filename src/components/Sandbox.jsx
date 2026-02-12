@@ -4,7 +4,7 @@ import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
 import remarkEmoji from 'remark-emoji';
 import Runner from './Runner';
-import { useFetchReadme, defaultPkg } from '../hooks/useRunnerEffects';
+import { useFetchReadme, defaultPkg, npmRegistry } from '../hooks/useRunnerEffects';
 import { useRef, useState, useEffect } from 'react';
 
 /**
@@ -87,7 +87,7 @@ const Sandbox = () => {
 
         const timer = setTimeout(async () => {
             try {
-                const response = await fetch(`https://registry.npmjs.org/-/v1/search?text=${encodeURIComponent(query)}&size=50`);
+                const response = await fetch(`https://${npmRegistry}/-/v1/search?text=${encodeURIComponent(query)}&size=50`);
                 const data = await response?.json();
 
                 if (isCurrentQuery) {
@@ -145,7 +145,7 @@ const Sandbox = () => {
                                     className="search-result-item"
                                 >
                                     <span className="result-row">
-                                        <NpmLogo size={10} /> {r?.package?.name ?? 'Unknown'}
+                                        <NpmLogo size={8} /> {r?.package?.name ?? 'Unknown'}
                                     </span>
                                 </li>
                             ))}

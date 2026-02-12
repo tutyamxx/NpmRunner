@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { extractJsImportCode } from '../utils/extractJsImportCode';
 
-const npmRegistry = 'registry.npmjs.org';
+export const npmRegistry = 'registry.npmjs.org';
 
 /**
  * The default package name used in the app.

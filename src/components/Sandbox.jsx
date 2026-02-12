@@ -1,6 +1,8 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
+import remarkGfm from 'remark-gfm';
+import remarkEmoji from 'remark-emoji';
 import Runner from './Runner';
 import { useFetchReadme, defaultPkg } from '../hooks/useRunnerEffects';
 import { useRef, useState, useEffect } from 'react';
@@ -106,7 +108,7 @@ const Sandbox = () => {
                     )}
                 </div>
 
-                <ReactMarkdown rehypePlugins={[rehypeRaw]}>
+                <ReactMarkdown rehypePlugins={[rehypeRaw]} remarkPlugins={[remarkGfm, remarkEmoji]}>
                     {readme ?? 'No README available'}
                 </ReactMarkdown>
             </div>

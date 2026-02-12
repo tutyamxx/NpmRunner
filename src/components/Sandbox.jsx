@@ -1,8 +1,9 @@
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import Runner from './Runner';
 import { useFetchReadme, defaultPkg } from '../hooks/useRunnerEffects';
+import { useRef, useState, useEffect } from 'react';
 
 /**
  * Sandbox component that fetches the README of an NPM package
@@ -13,24 +14,111 @@ import { useFetchReadme, defaultPkg } from '../hooks/useRunnerEffects';
  */
 const Sandbox = () => {
     const { pkg } = useParams();
+    const navigate = useNavigate();
     const { readme, initialCode } = useFetchReadme(pkg);
 
     // --| Use defaultPkg if pkg is undefined
     const currentPkg = pkg ?? defaultPkg;
 
+    // --| Search state
+    const searchRef = useRef(null);
+    const [query, setQuery] = useState(currentPkg);
+    const [results, setResults] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [isFocused, setIsFocused] = useState(false);
+
+    // --| Prefill search box when pkg changes
+    useEffect(() => setQuery(currentPkg ?? ''), [currentPkg]);
+
+    // --| Hide suggestions on click outside
+    useEffect(() => {
+        const handleOutside = (e) => !searchRef.current?.contains(e.target) && setIsFocused(false);
+        document.addEventListener('mousedown', handleOutside);
+
+        return () => document.removeEventListener('mousedown', handleOutside);
+    }, []);
+
+    // --| Search npm registry
+    useEffect(() => {
+        if (!query || query.length < 2) {
+            setResults([]);
+
+            return;
+        }
+
+        const controller = new AbortController();
+
+        const fetchResults = async () => {
+            setLoading(true);
+            try {
+                const npmResult = await fetch(`https://registry.npmjs.org/-/v1/search?text=${encodeURIComponent(query)}&size=5`, { signal: controller.signal });
+                const data = await npmResult?.json();
+                setResults(data?.objects ?? []);
+            } catch (e) {
+                // eslint-disable-next-line no-console
+                if (e?.name !== 'AbortError') console.error(e);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        const timer = setTimeout(fetchResults, 300);
+
+        return () => {
+            clearTimeout(timer);
+            controller.abort();
+        };
+    }, [query]);
+
+    // --| Handle selecting a package from search results
+    const handleSelect = (pkgName) => {
+        setQuery(pkgName ?? '');
+        setResults([]);
+        navigate(`/sandbox/${pkgName ?? ''}`);
+    };
+
     return (
-        <div className="sandbox-container">
-            <div className="sandbox-grid">
-                {/* Readme panel */}
-                <div className="sandbox-readme">
-                    <ReactMarkdown rehypePlugins={[rehypeRaw]}>
-                        {readme ?? 'No README available'}
-                    </ReactMarkdown>
+        <div className="sandbox-grid">
+            <div className="sandbox-readme">
+                <div className="sandbox-search" ref={searchRef}>
+                    <input
+                        type="text"
+                        placeholder="Search npm packages..."
+                        value={query ?? ''}
+                        onChange={(e) => setQuery(e?.target?.value ?? '')}
+                        onFocus={() => setIsFocused(true)}
+                        className="search-input"
+                    />
+                    {loading && <div className="search-loading">Searching...</div>}
+                    {isFocused && results?.length > 0 && (
+                        <ul className="search-results">
+                            {results?.map((r) => (
+                                <li
+                                    key={r?.package?.name ?? Math.random()}
+                                    onMouseDown={() => handleSelect(r?.package?.name ?? '')}
+                                    className="search-result-item"
+                                >
+                                    {r?.package?.name ?? 'Unknown'}
+                                </li>
+                            ))}
+                        </ul>
+                    )}
                 </div>
 
-                {/* Runner panel */}
-                <Runner pkg={currentPkg} initialCode={initialCode} />
+                <ReactMarkdown rehypePlugins={[rehypeRaw]}>
+                    {readme ?? 'No README available'}
+                </ReactMarkdown>
             </div>
+
+            {initialCode ? (
+                <Runner
+                    key={`${currentPkg ?? ''}-${initialCode ?? ''}`}
+                    pkg={currentPkg ?? ''}
+                    initialCode={initialCode ?? ''}
+                />
+            ) : (
+                <div className="runner-loading">Loading package...</div>
+            )}
         </div>
     );
 };

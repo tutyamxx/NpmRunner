@@ -32,7 +32,7 @@ const Runner = ({ pkg, initialCode }) => {
     const [logs, setLogs] = useState([]);
     const [warnings, setWarnings] = useState([]);
     const [notification, setNotification] = useState('');
-    const [code, setCode] = useState(initialCode ?? `import mod from '${currentPkg}';\nconsole.log(mod);`);
+    const [code, setCode] = useState(() => initialCode ?? `import mod from '${currentPkg}';\nconsole.log(mod);`);
     const [loading, setLoading] = useState(false);
 
     // --| Theme related (global via ThemeProvider)

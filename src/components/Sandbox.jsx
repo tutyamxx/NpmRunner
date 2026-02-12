@@ -40,33 +40,34 @@ const Sandbox = () => {
 
     // --| Search npm registry
     useEffect(() => {
-        if (!query || query.length < 2) {
+        if (!query || query?.length < 2) {
             setResults([]);
 
             return;
         }
 
-        const controller = new AbortController();
+        let isCurrentQuery = true;
+        setLoading(true);
 
-        const fetchResults = async () => {
-            setLoading(true);
+        const timer = setTimeout(async () => {
             try {
-                const npmResult = await fetch(`https://registry.npmjs.org/-/v1/search?text=${encodeURIComponent(query)}&size=5`, { signal: controller.signal });
-                const data = await npmResult?.json();
-                setResults(data?.objects ?? []);
-            } catch (e) {
-                // eslint-disable-next-line no-console
-                if (e?.name !== 'AbortError') console.error(e);
-            } finally {
-                setLoading(false);
-            }
-        };
+                const response = await fetch(`https://registry.npmjs.org/-/v1/search?text=${encodeURIComponent(query)}&size=10`);
+                const data = await response?.json();
 
-        const timer = setTimeout(fetchResults, 300);
+                if (isCurrentQuery) {
+                    setResults(data?.objects ?? []);
+                }
+            } catch (error) {
+            // eslint-disable-next-line no-console
+                if (isCurrentQuery) console.error(error);
+            } finally {
+                if (isCurrentQuery) setLoading(false);
+            }
+        }, 300);
 
         return () => {
+            isCurrentQuery = false;
             clearTimeout(timer);
-            controller.abort();
         };
     }, [query]);
 
@@ -98,7 +99,7 @@ const Sandbox = () => {
                                     onMouseDown={() => handleSelect(r?.package?.name ?? '')}
                                     className="search-result-item"
                                 >
-                                    {r?.package?.name ?? 'Unknown'}
+                                    📦 {r?.package?.name ?? 'Unknown'}{r?.package?.name ?? 'Unknown'}
                                 </li>
                             ))}
                         </ul>
@@ -117,7 +118,7 @@ const Sandbox = () => {
                     initialCode={initialCode ?? ''}
                 />
             ) : (
-                <div className="runner-loading">Loading package...</div>
+                <div className="runner-loading">📦 Loading package...</div>
             )}
         </div>
     );

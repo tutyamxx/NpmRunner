@@ -24,6 +24,13 @@ body {
     color: var(--text);
     overscroll-behavior: none;
     text-size-adjust: 100%;
+    box-sizing: border-box;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: inherit;
 }
 
 body.light {
@@ -78,6 +85,19 @@ pre {
     position: relative;
 }
 
+.search-results {
+    margin-top: 4px;
+    background-color: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    max-height: 200px;
+    overflow-y: auto;
+    list-style: none;
+    padding: 0;
+    width: 100%;
+    box-sizing: border-box;
+}
+
 .sandbox-search {
     position: absolute;
     top: 16px;
@@ -88,11 +108,16 @@ pre {
     z-index: 10;
 }
 
+.sandbox-search .search-results {
+    width: 100%;
+    box-sizing: border-box;
+}
+
 .runner-container {
     display: grid;
     grid-template-rows: 1fr 1fr;
     height: 100%;
-    gap: 6px; /* small space between editor & console */
+    gap: 6px;
     padding: 0;
     box-sizing: border-box;
     min-height: 0;
@@ -399,18 +424,6 @@ body.light ::selection {
     color: var(--text);
     margin-top: 4px;
     text-align: center;
-}
-
-.search-results {
-    margin-top: 4px;
-    background-color: var(--panel);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    max-height: 200px;
-    overflow-y: auto;
-    list-style: none;
-    padding: 0;
-    width: 100%;
 }
 
 .search-result-item {

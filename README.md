@@ -51,6 +51,7 @@
 
 Example usage:
 
+- [https://npmrunner.com/sandbox/anser](https://npmrunner.com/sandbox/anser)
 - [https://npmrunner.com/sandbox/orc-me](https://npmrunner.com/sandbox/orc-me)
 - [https://npmrunner.com/sandbox/contains-emoji](https://npmrunner.com/sandbox/contains-emoji)
 - [https://npmrunner.com/sandbox/is-valid-domain-extension](https://npmrunner.com/sandbox/is-valid-domain-extension)

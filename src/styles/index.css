@@ -440,3 +440,13 @@ body.light ::selection {
     background-color: var(--accent);
     color: #fff;
 }
+
+.result-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.result-row svg {
+    color: #cb3837;
+}

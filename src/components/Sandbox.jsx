@@ -18,6 +18,7 @@ const Sandbox = () => {
     const { pkg } = useParams();
     const navigate = useNavigate();
     const { readme, initialCode } = useFetchReadme(pkg);
+    const inputRef = useRef(null);
 
     // --| Use defaultPkg if pkg is undefined
     const currentPkg = pkg ?? defaultPkg;
@@ -60,8 +61,10 @@ const Sandbox = () => {
                     setResults(data?.objects ?? []);
                 }
             } catch (error) {
-            // eslint-disable-next-line no-console
-                if (isCurrentQuery) console.error(error);
+                if (import.meta.env.DEV) {
+                    // eslint-disable-next-line no-console
+                    if (isCurrentQuery) console.error(error);
+                }
             } finally {
                 if (isCurrentQuery) setLoading(false);
             }
@@ -85,11 +88,16 @@ const Sandbox = () => {
             <div className="sandbox-readme">
                 <div className="sandbox-search" ref={searchRef}>
                     <input
+                        ref={inputRef}
                         type="text"
                         placeholder="Search npm packages..."
                         value={query ?? ''}
                         onChange={(e) => setQuery(e?.target?.value ?? '')}
-                        onFocus={() => setIsFocused(true)}
+                        onFocus={(e) => {
+                            setIsFocused(true);
+                            e.target.select();
+                        }}
+                        onClick={(e) => e.target.select()}
                         className="search-input"
                     />
                     {loading && <div className="search-loading">Searching...</div>}

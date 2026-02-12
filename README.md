@@ -40,6 +40,7 @@
 - Native Node APIs (`fs`, `path`, `process`) are unavailable
 - Some packages expect a Node runtime
 - Not all `README` include runnable browser examples
+- Scoped packages are not supported yet: NPMRunner currently cannot load packages with `@` prefixes (e.g., `@stdlib/assert-is-object-like`).
 
 ## 🪁 TODO
 

@@ -138,9 +138,9 @@ const Sandbox = () => {
 
                     {isFocused && results?.length > 0 && (
                         <ul className="search-results">
-                            {results?.map((r) => (
+                            {results?.map((r, idx) => (
                                 <li
-                                    key={r?.package?.name ?? Math.random()}
+                                    key={r?.package?.name ?? idx}
                                     onMouseDown={() => handleSelect(r?.package?.name ?? '')}
                                     className="search-result-item"
                                 >

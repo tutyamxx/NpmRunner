@@ -1,6 +1,6 @@
 import { extractJsImportCode } from './extractJsImportCode';
 
-describe('extractJsImportCode', () => {
+describe('🏖️ extractJsImportCode', () => {
     let markdown;
 
     it('Returns empty array when markdown has no JS code blocks', () => {

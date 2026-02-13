@@ -13,7 +13,7 @@ const TestComponent = () => {
     );
 };
 
-describe('ThemeProvider', () => {
+describe('🏖️ ThemeProvider', () => {
     it('Renders buttons and initial theme', () => {
         render(
             <ThemeProvider>

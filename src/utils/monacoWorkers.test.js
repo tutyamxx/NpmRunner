@@ -1,7 +1,7 @@
 import { vi } from 'vitest';
 import '../utils/monacoWorkers';
 
-describe('MonacoEnvironment web worker configuration', () => {
+describe('🏖️ MonacoEnvironment web worker configuration', () => {
     beforeEach(() => {
         // --| Mock global Worker so no real workers are created
         globalThis.Worker = vi.fn();

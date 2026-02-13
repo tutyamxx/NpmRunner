@@ -22,7 +22,7 @@ import {
 
 globalThis.fetch = vi.fn();
 
-describe('useRunnerEffects hooks', () => {
+describe('🏖️ useRunnerEffects hooks', () => {
     beforeEach(() => {
         localStorage.clear();
         document.body.className = '';

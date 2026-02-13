@@ -5,7 +5,7 @@ import { vi } from 'vitest';
 // --| Mock Sandbox so we don't load actual component
 vi.mock('./Sandbox', () => ({ default: () => <div>Sandbox Component</div> }));
 
-describe('App entry point routing', () => {
+describe('🏖️ App entry point routing', () => {
     it('Renders Sandbox component at /sandbox', () => {
         render(
             <MemoryRouter initialEntries={['/sandbox']}>

@@ -1,4 +1,5 @@
 import { render, screen as rtlScreen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { vi } from 'vitest';
 
@@ -15,7 +16,7 @@ import Sandbox from './Sandbox';
 
 const mockFetch = (body) => vi.fn().mockResolvedValue({ ok: true, json: () => Promise.resolve(body) });
 
-describe('Sandbox Component', () => {
+describe('🏖️ Sandbox Component', () => {
     afterEach(() => vi.restoreAllMocks());
 
     it('Renders README and first import block', async () => {
@@ -229,5 +230,132 @@ describe('Sandbox Component', () => {
         );
 
         await waitFor(() => expect(rtlScreen.getByText(/Runner Component: mixed-imports-package \| import axios from 'axios';/i)).toBeInTheDocument());
+    });
+
+    it('Prefills search input from route param', async () => {
+        globalThis.fetch = mockFetch({ readme: '# Test' });
+
+        render(
+            <MemoryRouter initialEntries={['/sandbox/lodash']}>
+                <Routes>
+                    <Route path="/sandbox/:pkg?" element={<Sandbox />} />
+                </Routes>
+            </MemoryRouter>
+        );
+
+        expect(await rtlScreen.findByDisplayValue('lodash')).toBeInTheDocument();
+    });
+
+    it('Shows search results when typing', async () => {
+        globalThis.fetch = vi.fn().mockResolvedValueOnce({
+            ok: true,
+            json: async () => ({ readme: '# Test' })
+        }).mockResolvedValueOnce({
+            ok: true,
+            json: async () => ({
+                objects: [
+                    { package: { name: 'lodash' } },
+                    { package: { name: 'lodash-es' } }
+                ]
+            })
+        });
+
+        render(
+            <MemoryRouter initialEntries={['/sandbox/test']}>
+                <Routes>
+                    <Route path="/sandbox/:pkg?" element={<Sandbox />} />
+                </Routes>
+            </MemoryRouter>
+        );
+
+        const input = await rtlScreen.findByRole('textbox');
+
+        await userEvent.clear(input);
+        await userEvent.type(input, 'lo');
+
+        await waitFor(() => {
+            expect(rtlScreen.getByText('lodash')).toBeInTheDocument();
+            expect(rtlScreen.getByText('lodash-es')).toBeInTheDocument();
+        });
+    });
+
+    it('Navigates when selecting a search result', async () => {
+        globalThis.fetch = vi.fn().mockResolvedValueOnce({
+            ok: true,
+            json: async () => ({ readme: '# Test' })
+        }).mockResolvedValueOnce({
+            ok: true,
+            json: async () => ({
+                objects: [
+                    { package: { name: 'axios' } }
+                ]
+            })
+        });
+
+        render(
+            <MemoryRouter initialEntries={['/sandbox/test']}>
+                <Routes>
+                    <Route path="/sandbox/:pkg?" element={<Sandbox />} />
+                </Routes>
+            </MemoryRouter>
+        );
+
+        const input = await rtlScreen.findByRole('textbox');
+
+        await userEvent.clear(input);
+        await userEvent.type(input, 'ax');
+
+        const item = await rtlScreen.findByText('axios');
+
+        await userEvent.click(item);
+        await waitFor(() => expect(input).toHaveValue('axios'));
+    });
+
+    it('Hides search results when clicking outside', async () => {
+        globalThis.fetch = vi.fn().mockResolvedValueOnce({
+            ok: true,
+            json: async () => ({ readme: '# Test' })
+        }).mockResolvedValueOnce({
+            ok: true,
+            json: async () => ({
+                objects: [
+                    { package: { name: 'lodash' } }
+                ]
+            })
+        });
+
+        render(
+            <MemoryRouter initialEntries={['/sandbox/test']}>
+                <Routes>
+                    <Route path="/sandbox/:pkg?" element={<Sandbox />} />
+                </Routes>
+            </MemoryRouter>
+        );
+
+        const input = await rtlScreen.findByRole('textbox');
+        await userEvent.type(input, 'lo');
+
+        expect(await rtlScreen.findByText('lodash')).toBeInTheDocument();
+        await userEvent.click(document.body);
+
+        await waitFor(() => expect(rtlScreen.queryByText('lodash')).not.toBeInTheDocument());
+    });
+
+    it('Renders search input', async () => {
+        globalThis.fetch = vi.fn().mockResolvedValueOnce({
+            ok: true,
+            json: async () => ({ readme: '# Test' })
+        });
+
+        render(
+            <MemoryRouter initialEntries={['/sandbox/test']}>
+                <Routes>
+                    <Route path="/sandbox/:pkg?" element={<Sandbox />} />
+                </Routes>
+            </MemoryRouter>
+        );
+
+        const input = await rtlScreen.findByRole('textbox');
+        expect(input).toBeInTheDocument();
     });
 });

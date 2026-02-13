@@ -5,7 +5,7 @@ vi.mock('./Sandbox', () => ({ default: () => <div>Sandbox Component</div> }));
 
 import App from './App';
 
-describe('App Routing', () => {
+describe('🏖️ App Routing', () => {
     const renderAt = (path) => {
         window.history.pushState({}, 'Test page', path);
         render(<App />);

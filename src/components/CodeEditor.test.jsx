@@ -23,7 +23,7 @@ vi.mock('@monaco-editor/react', () => ({
     }
 }));
 
-describe('Code Editor', () => {
+describe('🏖️ Code Editor', () => {
     it('Renders correctly with given code', () => {
         const code = 'console.log("hello")';
         const setCode = vi.fn();

@@ -16,7 +16,7 @@ vi.mock('@monaco-editor/react', () => ({
 // --| Wrapper helper
 const renderWithTheme = (ui) => render(<ThemeProvider>{ui}</ThemeProvider>);
 
-describe('Runner Component', () => {
+describe('🏖️ Runner Component', () => {
     beforeEach(() => vi.restoreAllMocks());
 
     it('Renders editor with initial code', () => {

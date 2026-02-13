@@ -1,6 +1,6 @@
 import { buildImports } from './buildImports';
 
-describe('BuildImports', () => {
+describe('🏖️ buildImports', () => {
     let code;
 
     beforeEach(() => code = '');

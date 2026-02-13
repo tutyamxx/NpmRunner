@@ -1,6 +1,6 @@
 import { buildIframeSrcdoc } from './buildIframeSrcdoc';
 
-describe('buildIframeSrcdoc', () => {
+describe('🏖️ buildIframeSrcdoc', () => {
     let importLines;
     let transformedCode;
     let result;

@@ -450,3 +450,11 @@ body.light ::selection {
 .result-row svg {
     color: #cb3837;
 }
+
+.runner-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
+}

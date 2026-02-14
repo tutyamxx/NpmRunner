@@ -5,10 +5,13 @@ describe('🏖️ buildIframeSrcdoc', () => {
     let transformedCode;
     let result;
 
+    const mockOrigin = 'http://localhost';
+
     beforeEach(() => {
         importLines = '';
         transformedCode = '';
         result = '';
+        globalThis.window = { location: { origin: mockOrigin } };
     });
 
     it('Returns a valid HTML document string', () => {
@@ -24,32 +27,30 @@ describe('🏖️ buildIframeSrcdoc', () => {
         result = buildIframeSrcdoc('', '');
 
         expect(result).toContain('const replacer = (');
-        expect(result).toContain('function safeStringify');
+        expect(result).toContain('const safeStringify');
         expect(result).toContain('JSON.stringify');
     });
 
-    it('Overrides console.log and posts messages to parent', () => {
+    it('Overrides console methods using a loop and posts messages to parent', () => {
         result = buildIframeSrcdoc('', '');
 
-        expect(result).toContain('console.log = (...args)');
-        expect(result).toContain('parent.postMessage({ type: \'log\'');
+        expect(result).toContain('[\'log\', \'error\', \'warn\', \'info\'].forEach');
+        expect(result).toContain('console[level] = (...args)');
+        expect(result).toContain('emit(level, args)');
     });
 
-    it('Overrides console.error and posts messages to parent', () => {
+    it('Secures postMessage with the current origin instead of "*"', () => {
         result = buildIframeSrcdoc('', '');
 
-        expect(result).toContain('console.error = (...args)');
-        expect(result).toContain('parent.postMessage({ type: \'error\'');
+        expect(result).toContain(mockOrigin);
+        expect(result).not.toContain('\'*\'');
     });
 
     it('Injects importLines before executing user code', () => {
-        importLines = `
-            const React = await import('react');
-        `;
-
+        importLines = 'const React = await import(\'react\');';
         result = buildIframeSrcdoc(importLines, '');
 
-        expect(result).toContain(importLines.trim());
+        expect(result).toContain(importLines);
     });
 
     it('Injects transformed user code into the execution block', () => {
@@ -57,7 +58,6 @@ describe('🏖️ buildIframeSrcdoc', () => {
             console.log('hello world');
             const x = 42;
         `;
-
         result = buildIframeSrcdoc('', transformedCode);
 
         expect(result).toContain('console.log(\'hello world\')');
@@ -69,74 +69,44 @@ describe('🏖️ buildIframeSrcdoc', () => {
 
         expect(result).toContain('try {');
         expect(result).toContain('catch (e)');
-        expect(result).toContain('parent.postMessage({ type: \'error\'');
+        expect(result).toContain('emit(\'error\', [e])');
     });
 
-    it('Notifies parent when execution is done', () => {
+    it('Handles global errors and promise rejections', () => {
         result = buildIframeSrcdoc('', '');
 
-        expect(result).toContain('parent.postMessage({ type: \'done\' }, \'*\')');
+        expect(result).toContain('window.onerror');
+        expect(result).toContain('window.onunhandledrejection');
+        expect(result).toContain('emit(\'error\', [error || msg])');
+    });
+
+    it('Notifies parent when execution is done with specific origin', () => {
+        result = buildIframeSrcdoc('', '');
+
+        expect(result).toContain(`parent.postMessage({ type: 'done' }, '${mockOrigin}')`);
     });
 
     it('Handles null or undefined transformedCode safely', () => {
         result = buildIframeSrcdoc('', null);
 
         expect(result).toContain('try {');
-        expect(result).toContain('} catch (e)');
-        expect(result).toContain('parent.postMessage({ type: \'done\' }, \'*\')');
+        expect(result).toContain('catch (e)');
+        expect(result).toContain(`parent.postMessage({ type: 'done' }, '${mockOrigin}')`);
     });
 
-    it('Preserves line indentation when injecting transformed code', () => {
-        transformedCode = `
-            console.log('a');
-            console.log('b');
-        `.trim();
-
-        result = buildIframeSrcdoc('', transformedCode);
-
-        // --| Expect injected lines to be indented inside the try block
-        expect(result).toMatch(/try\s*\{\s*console\.log\('a'\);/s);
-        expect(result).toMatch(/console\.log\('b'\);/);
-    });
-
-    it('Places importLines before the try/catch execution block', () => {
-        importLines = `
-            const React = await import('react');
-        `;
-
-        result = buildIframeSrcdoc(importLines, 'console.log("hi")');
-
-        const importIndex = result.indexOf(importLines.trim());
-        const tryIndex = result.indexOf('try {');
-
-        expect(importIndex).toBeGreaterThan(-1);
-        expect(tryIndex).toBeGreaterThan(-1);
-        expect(importIndex).toBeLessThan(tryIndex);
-    });
-
-    it('Ensures console overrides happen before user code execution', () => {
-        result = buildIframeSrcdoc('', 'console.log("hi")');
-
-        const overrideIndex = result.indexOf('console.log = (...args)');
-        const tryIndex = result.indexOf('try {');
-
-        expect(overrideIndex).toBeGreaterThan(-1);
-        expect(tryIndex).toBeGreaterThan(-1);
-        expect(overrideIndex).toBeLessThan(tryIndex);
-    });
-
-    it('Uses safeStringify for object arguments in console.log', () => {
+    it('Uses safeStringify for object arguments in console logs', () => {
         result = buildIframeSrcdoc('', '');
 
         expect(result).toContain('typeof arg === \'object\'');
-        expect(result).toContain('? safeStringify(arg)');
+        expect(result).toContain('safeStringify(arg)');
     });
 
-    it('Uses safeStringify for object arguments in console.error', () => {
+    it('Provides specific Error object serialization with stack traces', () => {
         result = buildIframeSrcdoc('', '');
 
-        expect(result).toContain('console.error = (...args)');
-        expect(result).toContain('? safeStringify(arg)');
+        expect(result).toContain('obj instanceof Error');
+        expect(result).toContain('stack: obj.stack');
+        expect(result).toContain('message: obj.message');
     });
 
     it('Does not inline raw require or import statements in transformed code', () => {
@@ -147,7 +117,6 @@ describe('🏖️ buildIframeSrcdoc', () => {
 
         result = buildIframeSrcdoc('', transformedCode);
 
-        expect(result).toContain('try {');
         expect(result).toContain('import React from \'react\'');
         expect(result).toContain('require(\'fs\')');
     });
@@ -159,31 +128,24 @@ describe('🏖️ buildIframeSrcdoc', () => {
         expect(result).toContain('})();');
     });
 
-    it('Defines console.log and console.error originals before overriding', () => {
-        result = buildIframeSrcdoc('', '');
-
-        expect(result).toContain('const log = console.log;');
-        expect(result).toContain('const error = console.error;');
-    });
-
-    it('Posts execution errors using error message fallback', () => {
-        result = buildIframeSrcdoc('', '');
-
-        expect(result).toContain('e?.message || String(e)');
-    });
-
     it('Does not omit the finally block even with empty user code', () => {
         result = buildIframeSrcdoc('', '');
 
         expect(result).toContain('} finally {');
-        expect(result).toContain('parent.postMessage({ type: \'done\' }, \'*\')');
+        expect(result).toContain(`parent.postMessage({ type: 'done' }, '${mockOrigin}')`);
     });
 
     it('Generates a single script tag with type="module"', () => {
         result = buildIframeSrcdoc('', '');
 
         const matches = result.match(/<script type="module">/g) || [];
-
         expect(matches.length).toBe(1);
+    });
+
+    it('Handles unserializable objects gracefully', () => {
+        result = buildIframeSrcdoc('', '');
+
+        expect(result).toContain('catch (e)');
+        expect(result).toContain('"[Unserializable Object]"');
     });
 });

@@ -14,62 +14,73 @@ import { getCircularReplacer } from '../hooks/useRunnerEffects';
  * @returns {string} The full HTML string for the iframe's `srcdoc`.
  */
 export const buildIframeSrcdoc = (importLines, transformedCode) => {
-    // --| Convert the circular replacer into a string to inject into the iframe
-    const circularReplacerString = `
+    // --| Capture the parent origin to secure postMessage communication
+    const appOrigin = window.location.origin;
+
+    const internalHelpers = `
         const replacer = (${getCircularReplacer.toString()})();
 
-        function safeStringify(obj) {
-            return JSON.stringify(obj, replacer, 2);
-        }
+        const safeStringify = (obj) => {
+            try {
+                // --| Handle Error objects specifically (JSON.stringify returns {} for Errors otherwise)
+                if (obj instanceof Error) {
+                    return JSON.stringify({
+                        name: obj.name,
+                        message: obj.message,
+                        stack: obj.stack
+                    }, null, 2);
+                }
+
+                return JSON.stringify(obj, replacer, 2);
+            } catch (e) {
+                return "[Unserializable Object]";
+            }
+        };
+
+        const formatArg = (arg) => (typeof arg === 'object' && arg !== null ? safeStringify(arg) : String(arg));
+        const emit = (type, args) => parent.postMessage({ type, args: args.map(formatArg) }, '${appOrigin}');
     `;
 
     return `
         <!DOCTYPE html>
-        <html>
+        <html lang="en">
         <body>
             <script type="module">
+                ${internalHelpers}
+
+                // --| Global Error Handling (for sync and async errors)
+                window.onerror = (msg, url, line, col, error) => {
+                    emit('error', [error || msg]);
+                    return false;
+                };
+
+                window.onunhandledrejection = (event) => emit('error', [event.reason || 'Unhandled Promise Rejection']);
+
+                // --| Centralized Console Overrides
+                ['log', 'error', 'warn', 'info'].forEach(level => {
+                    const original = console[level];
+
+                    console[level] = (...args) => {
+                        emit(level, args);
+                        original.apply(console, args);
+                    };
+                });
+
+                // --| Execution Environment
                 (async () => {
-                    const log = console.log;
-                    const error = console.error;
-
-                    // --| Inject safe stringify from shared hook
-                    ${circularReplacerString}
-
-                    // --| Override console.log to stringify objects safely
-                    console.log = (...args) => {
-                        const formattedArgs = args.map(arg =>
-                            typeof arg === 'object' && arg !== null
-                                ? safeStringify(arg)
-                                : String(arg)
-                        );
-
-                        parent.postMessage({ type: 'log', args: formattedArgs }, '*');
-                        log(...args);
-                    };
-
-                    // --| Override console.error to stringify objects safely
-                    console.error = (...args) => {
-                        const formattedArgs = args.map(arg =>
-                            typeof arg === 'object' && arg !== null
-                                ? safeStringify(arg)
-                                : String(arg)
-                        );
-
-                        parent.postMessage({ type: 'error', args: formattedArgs }, '*');
-                        error(...args);
-                    };
-
-                    // --| Await all imports first
-                    ${importLines}
-
-                    // --| Then run the user code
                     try {
-                        ${transformedCode?.split('\n')?.map(line => `        ${line}`)?.join('\n')}
+                        // --| Dynamically import modules
+                        ${importLines}
+
+                        // --| Execute the transformed user code
+                        ${transformedCode}
+
                     } catch (e) {
-                        parent.postMessage({ type: 'error', args: [e?.message || String(e)] }, '*');
+                        // --| Catch any errors during import or execution
+                        emit('error', [e]);
                     } finally {
-                        // --| Notify parent that execution is done
-                        parent.postMessage({ type: 'done' }, '*');
+                        // --| Notify parent that execution has finished
+                        parent.postMessage({ type: 'done' }, '${appOrigin}');
                     }
                 })();
             </script>

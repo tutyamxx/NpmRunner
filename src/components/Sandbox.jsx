@@ -76,27 +76,37 @@ const Sandbox = () => {
 
     // --| Search npm registry
     useEffect(() => {
-        if (!query || query?.length < 2) {
+        const trimmedQuery = query?.trim();
+
+        if (!trimmedQuery || trimmedQuery.length < 2) {
             setResults([]);
+            setLoading(false);
 
             return;
         }
 
         let isCurrentQuery = true;
-        setLoading(true);
+        const controller = new AbortController();
 
         const timer = setTimeout(async () => {
+            setLoading(true);
+
             try {
-                const response = await fetch(`https://${npmRegistry}/-/v1/search?text=${encodeURIComponent(query)}&size=50`);
-                const data = await response?.json();
+                const response = await fetch(`https://${npmRegistry}/-/v1/search?text=${encodeURIComponent(`${trimmedQuery}`)}&size=50`, { signal: controller.signal });
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                const data = await response.json();
 
                 if (isCurrentQuery) {
                     setResults(data?.objects ?? []);
                 }
             } catch (error) {
-                if (import.meta.env.DEV) {
+                if (error.name !== 'AbortError' && isCurrentQuery) {
                     // eslint-disable-next-line no-console
-                    if (isCurrentQuery) console.error(error);
+                    if (import.meta.env.DEV) console.error(error);
                 }
             } finally {
                 if (isCurrentQuery) setLoading(false);
@@ -105,7 +115,9 @@ const Sandbox = () => {
 
         return () => {
             isCurrentQuery = false;
+
             clearTimeout(timer);
+            controller.abort();
         };
     }, [query]);
 

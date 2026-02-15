@@ -1,12 +1,17 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
+
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
 import remarkEmoji from 'remark-emoji';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
+
 import Runner from './Runner';
 import { useFetchReadme, defaultPkg, npmRegistry } from '../hooks/useRunnerEffects';
 import { useRef, useState, useEffect } from 'react';
 
+import 'katex/dist/katex.min.css';
 /**
  * NpmLogo React component
  *
@@ -165,7 +170,7 @@ const Sandbox = () => {
                     )}
                 </div>
 
-                <ReactMarkdown rehypePlugins={[rehypeRaw]} remarkPlugins={[remarkGfm, remarkEmoji]}>
+                <ReactMarkdown rehypePlugins={[rehypeRaw, rehypeKatex]} remarkPlugins={[remarkGfm, remarkEmoji, remarkMath]}>
                     {readme ?? 'No README available'}
                 </ReactMarkdown>
             </div>

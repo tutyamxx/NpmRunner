@@ -1,7 +1,7 @@
 {
   "name": "npm-runner",
   "private": true,
-  "version": "1.2.2",
+  "version": "1.2.3",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -16,15 +16,18 @@
     "@monaco-editor/react": "^4.7.0",
     "acorn": "^8.15.0",
     "esbuild-wasm": "^0.27.2",
+    "katex": "^0.16.28",
     "prop-types": "^15.8.1",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "react-markdown": "^10.1.0",
     "react-router": "^7.13.0",
     "react-router-dom": "^7.13.0",
+    "rehype-katex": "^7.0.1",
     "rehype-raw": "^7.0.0",
     "remark-emoji": "^5.0.2",
-    "remark-gfm": "^4.0.1"
+    "remark-gfm": "^4.0.1",
+    "remark-math": "^6.0.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.2",

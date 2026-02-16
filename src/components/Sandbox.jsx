@@ -53,7 +53,10 @@ const NpmLogo = ({ height = 14 }) => (
  * @returns {JSX.Element} The Sandbox component layout
  */
 const Sandbox = () => {
-    const { pkg } = useParams();
+    const params = useParams();
+    // --| Use params['*'] because we used the wildcard in the route
+    const pkg = params['*'] || defaultPkg;
+
     const navigate = useNavigate();
     const { readme, initialCode } = useFetchReadme(pkg);
     const inputRef = useRef(null);
@@ -128,9 +131,11 @@ const Sandbox = () => {
 
     // --| Handle selecting a package from search results
     const handleSelect = (pkgName) => {
-        setQuery(pkgName ?? '');
+        setQuery(pkgName);
         setResults([]);
-        navigate(`/sandbox/${pkgName ?? ''}`);
+
+        // --| This turns @scope/pkg into @scope%2Fpkg, which is safer for browsers
+        navigate(`/sandbox/${encodeURIComponent(pkgName)}`);
     };
 
     return (

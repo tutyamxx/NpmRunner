@@ -1,4 +1,47 @@
 /**
+ * Safely encodes an npm package name for CDN import URLs, with support for scoped packages.
+ *
+ * - Unscoped packages are fully URL-encoded.
+ * - Scoped packages preserve the "@scope/" segment and only encode the package name.
+ * - Any additional subpath segments are preserved as-is.
+ *
+ * Examples:
+ *   lodash → "lodash"
+ *   @types/node → "@types/node"
+ *   @scope/pkg/sub/path → "@scope/pkg/sub/path"
+ *
+ * @param {string} pkg - The raw npm package specifier (may be scoped and/or include subpaths).
+ * @returns {string} A CDN-safe package path string.
+ */
+const encodeScopedPackage = (pkg) => {
+    if (!pkg) return '';
+
+    // If it's not scoped, just encode the whole thing (standard behavior)
+    if (!pkg?.startsWith('@')) {
+        return encodeURIComponent(pkg);
+    }
+
+    // --| Scoped package logic: @scope/pkg-name/sub-path
+    const parts = pkg?.split('/');
+
+    // --| parts[0] is the @scope
+    // --| parts[1] is the package name (this is what usually needs encoding)
+    // --| parts[2+] are subpaths
+
+    const scope = parts?.[0];
+    const pkgName = parts?.[1] ? encodeURIComponent(parts?.[1]) : '';
+    const rest = parts?.slice(2)?.join('/');
+
+    let result = `${scope}/${pkgName}`;
+
+    if (rest) {
+        result += `/${rest}`;
+    }
+
+    return result;
+};
+
+/**
  * Build dynamic import lines for the runner iframe
  *
  * @param {string} code - Full user code
@@ -28,11 +71,12 @@ export const buildImports = (code = '') => {
     let transformedCode = code?.replace(importRegex, '')?.replace(requireRegex, '');
 
     // --| Transform remaining inline require() calls into dynamic imports
-    transformedCode = transformedCode?.replace(
+    transformedCode = transformedCode.replace(
         /require\(['"](.*?)['"]\)/g,
+
         (_, pkgName) => {
-            const encodedPkg = encodeURIComponent(pkgName);
-            const url = `https://esm.sh/${encodedPkg}@latest?bundle`;
+            const safePkg = encodeScopedPackage(pkgName);
+            const url = `https://esm.sh/${safePkg}@latest?bundle`;
 
             return `(await import('${url}'))?.default ?? (await import('${url}'))`;
         }
@@ -43,12 +87,14 @@ export const buildImports = (code = '') => {
         let ${varName};
 
         try {
-            ${varName} = await import('https://cdn.skypack.dev/${encodeURIComponent(pkg)}');
+            // --| Try esm.sh first — generally better for scoped packages
+            ${varName} = await import('https://esm.sh/${encodeScopedPackage(pkg)}?bundle&target=es2022');
         } catch (err) {
             console.error('[Package Error]', '${pkg}', err?.message ?? err, '⚠️ Might be expecting a Node runtime.');
 
             try {
-                ${varName} = await import('https://esm.sh/${encodeURIComponent(pkg)}@latest?bundle');
+                // --| Fallback to Skypack only if esm.sh fails
+                ${varName} = await import('https://cdn.skypack.dev/${encodeScopedPackage(pkg)}');
             } catch (err2) {
                 console.error('[Package Error]', '${pkg}', err2?.message ?? err2, '⚠️ Failed to load.');
                 ${varName} = {};

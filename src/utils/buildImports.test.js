@@ -115,13 +115,20 @@ describe('🏖️ buildImports', () => {
         expect(importLines).toContain('console.error');
     });
 
-    it('Encodes package names correctly for URLs', () => {
+    it('Encodes scoped packages correctly', () => {
         code = `
-            const myPkg = require('@my-org/mypkg');
+            import qrcode from '@slidoapp/qrcode';
+            import { QueryClient } from '@tanstack/query-core';
         `;
 
-        const { importLines } = buildImports(code);
+        const { importLines, transformedCode } = buildImports(code);
 
-        expect(importLines).toContain('%40my-org%2Fmypkg');
+        // --| Check scoped package names preserved in URL
+        expect(importLines).toContain('@slidoapp/qrcode');
+        expect(importLines).toContain('@tanstack/query-core');
+
+        // --| Ensure transformed code does not have original import lines
+        expect(transformedCode).not.toContain('import qrcode');
+        expect(transformedCode).not.toContain('import { QueryClient }');
     });
 });

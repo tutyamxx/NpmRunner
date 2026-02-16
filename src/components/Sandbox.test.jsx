@@ -34,13 +34,17 @@ describe('🏖️ Sandbox Component', () => {
         render(
             <MemoryRouter initialEntries={['/sandbox/test-package']}>
                 <Routes>
-                    <Route path="/sandbox/:pkg?" element={<Sandbox />} />
+                    <Route path="/sandbox/*" element={<Sandbox />} />
                 </Routes>
             </MemoryRouter>
         );
 
         await waitFor(() => expect(rtlScreen.getByText(/Test Package/i)).toBeInTheDocument());
-        await waitFor(() => expect(rtlScreen.getByText(/Runner Component: test-package \| import something from 'somewhere';/i)).toBeInTheDocument());
+        await waitFor(() => {
+            const el = rtlScreen.getByText(/Runner Component:/i);
+            expect(el.textContent).toContain('test-package');
+            expect(el.textContent).toContain('import something from \'somewhere\';');
+        });
     });
 
     it('Uses default code if no import blocks', async () => {
@@ -57,12 +61,16 @@ describe('🏖️ Sandbox Component', () => {
         render(
             <MemoryRouter initialEntries={['/sandbox/test-package']}>
                 <Routes>
-                    <Route path="/sandbox/:pkg?" element={<Sandbox />} />
+                    <Route path="/sandbox/*" element={<Sandbox />} />
                 </Routes>
             </MemoryRouter>
         );
 
-        await waitFor(() => expect(rtlScreen.getByText(/Runner Component: test-package \| import mod from 'test-package';/i)).toBeInTheDocument());
+        await waitFor(() => {
+            const el = rtlScreen.getByText(/Runner Component:/i);
+            expect(el.textContent).toContain('test-package');
+            expect(el.textContent).toContain('import mod from \'test-package\';');
+        });
     });
 
     it('Shows "Package not found!" if fetch fails', async () => {
@@ -71,14 +79,16 @@ describe('🏖️ Sandbox Component', () => {
         render(
             <MemoryRouter initialEntries={['/sandbox/test-package']}>
                 <Routes>
-                    <Route path="/sandbox/:pkg?" element={<Sandbox />} />
+                    <Route path="/sandbox/*" element={<Sandbox />} />
                 </Routes>
             </MemoryRouter>
         );
 
         await waitFor(() => {
             expect(rtlScreen.getByText('Package not found!')).toBeInTheDocument();
-            expect(rtlScreen.getByText(/Runner Component: test-package \| import mod from 'test-package';/i)).toBeInTheDocument();
+            const el = rtlScreen.getByText(/Runner Component:/i);
+            expect(el.textContent).toContain('test-package');
+            expect(el.textContent).toContain('import mod from \'test-package\';');
         });
     });
 
@@ -106,13 +116,15 @@ describe('🏖️ Sandbox Component', () => {
         render(
             <MemoryRouter initialEntries={['/sandbox/multi-package']}>
                 <Routes>
-                    <Route path="/sandbox/:pkg?" element={<Sandbox />} />
+                    <Route path="/sandbox/*" element={<Sandbox />} />
                 </Routes>
             </MemoryRouter>
         );
 
         await waitFor(() => {
-            expect(rtlScreen.getByText(/Runner Component: multi-package \| import foo from 'foo';/i)).toBeInTheDocument();
+            const el = rtlScreen.getByText(/Runner Component:/i);
+            expect(el.textContent).toContain('multi-package');
+            expect(el.textContent).toContain('import foo from \'foo\';');
         });
     });
 
@@ -128,12 +140,16 @@ describe('🏖️ Sandbox Component', () => {
         render(
             <MemoryRouter initialEntries={['/sandbox/no-js']}>
                 <Routes>
-                    <Route path="/sandbox/:pkg?" element={<Sandbox />} />
+                    <Route path="/sandbox/*" element={<Sandbox />} />
                 </Routes>
             </MemoryRouter>
         );
 
-        await waitFor(() => expect(rtlScreen.getByText(/Runner Component: no-js \| import mod from 'no-js';/i)).toBeInTheDocument());
+        await waitFor(() => {
+            const el = rtlScreen.getByText(/Runner Component:/i);
+            expect(el.textContent).toContain('no-js');
+            expect(el.textContent).toContain('import mod from \'no-js\';');
+        });
     });
 
     it('Handles simple require() statements', async () => {
@@ -151,12 +167,16 @@ describe('🏖️ Sandbox Component', () => {
         render(
             <MemoryRouter initialEntries={['/sandbox/require-package']}>
                 <Routes>
-                    <Route path="/sandbox/:pkg?" element={<Sandbox />} />
+                    <Route path="/sandbox/*" element={<Sandbox />} />
                 </Routes>
             </MemoryRouter>
         );
 
-        await waitFor(() => expect(rtlScreen.getByText(/Runner Component: require-package \| const lodash = require\('lodash'\);/i)).toBeInTheDocument());
+        await waitFor(() => {
+            const el = rtlScreen.getByText(/Runner Component:/i);
+            expect(el.textContent).toContain('require-package');
+            expect(el.textContent).toContain('const lodash = require(\'lodash\');');
+        });
     });
 
     it('Handles destructured require() statements', async () => {
@@ -174,12 +194,16 @@ describe('🏖️ Sandbox Component', () => {
         render(
             <MemoryRouter initialEntries={['/sandbox/destructured-require']}>
                 <Routes>
-                    <Route path="/sandbox/:pkg?" element={<Sandbox />} />
+                    <Route path="/sandbox/*" element={<Sandbox />} />
                 </Routes>
             </MemoryRouter>
         );
 
-        await waitFor(() => expect(rtlScreen.getByText(/Runner Component: destructured-require \| const { map, filter } = require\('lodash'\);/i)).toBeInTheDocument());
+        await waitFor(() => {
+            const el = rtlScreen.getByText(/Runner Component:/i);
+            expect(el.textContent).toContain('destructured-require');
+            expect(el.textContent).toContain('const { map, filter } = require(\'lodash\');');
+        });
     });
 
     it('Uses default code if README has require() with no imports', async () => {
@@ -196,12 +220,16 @@ describe('🏖️ Sandbox Component', () => {
         render(
             <MemoryRouter initialEntries={['/sandbox/no-require-import']}>
                 <Routes>
-                    <Route path="/sandbox/:pkg?" element={<Sandbox />} />
+                    <Route path="/sandbox/*" element={<Sandbox />} />
                 </Routes>
             </MemoryRouter>
         );
 
-        await waitFor(() => expect(rtlScreen.getByText(/Runner Component: no-require-import \| import mod from 'no-require-import';/i)).toBeInTheDocument());
+        await waitFor(() => {
+            const el = rtlScreen.getByText(/Runner Component:/i);
+            expect(el.textContent).toContain('no-require-import');
+            expect(el.textContent).toContain('import mod from \'no-require-import\';');
+        });
     });
 
     it('Selects first import block even if a require block appears first', async () => {
@@ -224,12 +252,16 @@ describe('🏖️ Sandbox Component', () => {
         render(
             <MemoryRouter initialEntries={['/sandbox/mixed-imports-package']}>
                 <Routes>
-                    <Route path="/sandbox/:pkg?" element={<Sandbox />} />
+                    <Route path="/sandbox/*" element={<Sandbox />} />
                 </Routes>
             </MemoryRouter>
         );
 
-        await waitFor(() => expect(rtlScreen.getByText(/Runner Component: mixed-imports-package \| import axios from 'axios';/i)).toBeInTheDocument());
+        await waitFor(() => {
+            const el = rtlScreen.getByText(/Runner Component:/i);
+            expect(el.textContent).toContain('mixed-imports-package');
+            expect(el.textContent).toContain('import axios from \'axios\';');
+        });
     });
 
     it('Prefills search input from route param', async () => {
@@ -238,7 +270,7 @@ describe('🏖️ Sandbox Component', () => {
         render(
             <MemoryRouter initialEntries={['/sandbox/lodash']}>
                 <Routes>
-                    <Route path="/sandbox/:pkg?" element={<Sandbox />} />
+                    <Route path="/sandbox/*" element={<Sandbox />} />
                 </Routes>
             </MemoryRouter>
         );
@@ -263,7 +295,7 @@ describe('🏖️ Sandbox Component', () => {
         render(
             <MemoryRouter initialEntries={['/sandbox/test']}>
                 <Routes>
-                    <Route path="/sandbox/:pkg?" element={<Sandbox />} />
+                    <Route path="/sandbox/*" element={<Sandbox />} />
                 </Routes>
             </MemoryRouter>
         );
@@ -295,7 +327,7 @@ describe('🏖️ Sandbox Component', () => {
         render(
             <MemoryRouter initialEntries={['/sandbox/test']}>
                 <Routes>
-                    <Route path="/sandbox/:pkg?" element={<Sandbox />} />
+                    <Route path="/sandbox/*" element={<Sandbox />} />
                 </Routes>
             </MemoryRouter>
         );
@@ -327,7 +359,7 @@ describe('🏖️ Sandbox Component', () => {
         render(
             <MemoryRouter initialEntries={['/sandbox/test']}>
                 <Routes>
-                    <Route path="/sandbox/:pkg?" element={<Sandbox />} />
+                    <Route path="/sandbox/*" element={<Sandbox />} />
                 </Routes>
             </MemoryRouter>
         );
@@ -348,9 +380,9 @@ describe('🏖️ Sandbox Component', () => {
         });
 
         render(
-            <MemoryRouter initialEntries={['/sandbox/test']}>
+            <MemoryRouter initialEntries={['/sandbox/test']} >
                 <Routes>
-                    <Route path="/sandbox/:pkg?" element={<Sandbox />} />
+                    <Route path="/sandbox/*" element={<Sandbox />} />
                 </Routes>
             </MemoryRouter>
         );

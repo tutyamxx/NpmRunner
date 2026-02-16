@@ -37,10 +37,10 @@
 
 ## ⚠️ Limitations
 
+- Scoped packages are supported now, but browser-incompatible packages cannot be loaded. NPMRunner runs in a browser sandbox and will fail for Node-only or build-time packages (e.g., `@stdlib/*`, `@types/*`, `@babel/*`, `eslint*`, `webpack*`, and packages that depend on Node core modules like `fs`, `path`, or `crypto` etc.).
 - Native Node APIs (`fs`, `path`, `process`) are unavailable
 - Some packages expect a Node runtime
 - Not all `README` include runnable browser examples
-- Scoped packages are not supported yet: NPMRunner currently cannot load packages with `@` prefixes (e.g., `@stdlib/assert-is-object-like`).
 
 ## 🪁 TODO
 
@@ -51,6 +51,7 @@
 
 Example usage:
 
+- [https://npmrunner.com/sandbox/@slidoapp/qrcode](https://npmrunner.com/sandbox/%40slidoapp%2Fqrcode)
 - [https://npmrunner.com/sandbox/anser](https://npmrunner.com/sandbox/anser)
 - [https://npmrunner.com/sandbox/orc-me](https://npmrunner.com/sandbox/orc-me)
 - [https://npmrunner.com/sandbox/contains-emoji](https://npmrunner.com/sandbox/contains-emoji)

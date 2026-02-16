@@ -12,7 +12,7 @@ root.render(
     <ThemeProvider>
         <BrowserRouter>
             <Routes>
-                <Route path="/sandbox/:pkg?" element={<Sandbox />} />
+                <Route path="/sandbox/*" element={<Sandbox />} />
                 <Route path="/" element={<Navigate to={`/sandbox/${defaultPkg}`} replace />} />
                 <Route path="*" element={<Navigate to={`/sandbox/${defaultPkg}`} replace />} />
             </Routes>

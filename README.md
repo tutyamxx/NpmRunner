@@ -18,26 +18,27 @@
 
 - **NpmRunner** is a `browser-based` JavaScript 🏖️ `sandbox` that lets you **explore and run npm packages directly in the browser**.
 - **NOT** affiliated with `npm, Inc`.
-- **NOT** a `RunKit` replacement but you can run stuff here
+- **NOT** a `RunKit` replacement but you can run stuff here exactly like on there
 
 ## 🏖️ What You Can Do / Features
 
 - 🏖️ Load any npm package by `URL`
-- 🏖️ Automatically fetch and render its `README` with `HTML` support
+- 🏖️ Scoped packages are supported [Read Limitations](#️-limitations)
+- 🏖️ Automatically fetch and render its `README` with `HTML`, `Math Formulas` and `Emoji` support
 - 🏖️ Auto-import sample code from `README` into the `IDE`, if present
-- 🏖️ Run JavaScript safely inside a sandboxed iframe
 - 🏖️ Dynamic `ESM` loading, with `CommonJS (require)` support
-- 🏖️ Monaco Editor (`VS Code–like experience`)
+- 🏖️ Run `JavaScript` safely inside a `sandboxed` iframe
+- 🏖️ Monaco Editor (`VS Code–like experience`) in browser
 - 🏖️ See console output and errors in real time
 - 🏖️ Clear editor & clear console buttons
 - 🏖️ Toggle between `Dark` / `Light` themes
-- 🏖️ Shareable URLs per package
+- 🏖️ Shareable `URLs` per package
 - 🏖️ Test packages without installing anything locally
-- 🏖️ Works with almost all packages (WIP here, trying to make almost all of them load)
+- 🏖️ Works with almost all packages (`WIP here`, trying to make almost all of them load)
 
 ## ⚠️ Limitations
 
-- Scoped packages are supported now, but browser-incompatible packages cannot be loaded. NPMRunner runs in a browser sandbox and will fail for Node-only or build-time packages (e.g., `@stdlib/*`, `@types/*`, `@babel/*`, `eslint*`, `webpack*`, and packages that depend on Node core modules like `fs`, `path`, or `crypto` etc.).
+- Scoped packages are supported, but browser-incompatible packages cannot be loaded. NPMRunner runs in a browser sandbox and will fail for Node-only or build-time packages (e.g., `@stdlib/*`, `@types/*`, `@babel/*`, `eslint*`, `webpack*`, and packages that depend on Node core modules like `fs`, `path`, or `crypto` etc.).
 - Native Node APIs (`fs`, `path`, `process`) are unavailable
 - Some packages expect a Node runtime
 - Not all `README` include runnable browser examples
@@ -46,6 +47,7 @@
 
 - TypeScript support (I might or might not, WIP)
 - Add more stuff.
+- Need to implement more code coverage tests
 
 ## 🚀 Live Usage
 

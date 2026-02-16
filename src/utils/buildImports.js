@@ -1,17 +1,21 @@
 /**
  * Safely encodes an npm package name for CDN import URLs, with support for scoped packages.
  *
- * - Unscoped packages are fully URL-encoded.
- * - Scoped packages preserve the "@scope/" segment and only encode the package name.
- * - Any additional subpath segments are preserved as-is.
+ * Behavior:
+ * - **Unscoped packages**: the entire package specifier is URL-encoded.
+ *   e.g., `my pkg` → `my%20pkg`
+ * - **Scoped packages** (`@scope/pkg`): the `@scope/` segment is preserved as-is,
+ *   the package name is URL-encoded, and any additional subpaths are preserved literally.
+ * - **Subpaths**: any segments after the package name are not encoded and remain unchanged.
  *
  * Examples:
- *   lodash → "lodash"
- *   @types/node → "@types/node"
- *   @scope/pkg/sub/path → "@scope/pkg/sub/path"
+ *   "lodash" → "lodash"
+ *   "@types/node" → "@types/node"
+ *   "@scope/pkg/sub/path" → "@scope/pkg/sub/path"
+ *   "@scope/pkg/a b" → "@scope/pkg/a b"  // package name encoded if contains special chars
  *
  * @param {string} pkg - The raw npm package specifier (may be scoped and/or include subpaths).
- * @returns {string} A CDN-safe package path string.
+ * @returns {string} A CDN-safe package path string suitable for import URLs.
  */
 const encodeScopedPackage = (pkg) => {
     if (!pkg) return '';
@@ -27,7 +31,6 @@ const encodeScopedPackage = (pkg) => {
     // --| parts[0] is the @scope
     // --| parts[1] is the package name (this is what usually needs encoding)
     // --| parts[2+] are subpaths
-
     const scope = parts?.[0];
     const pkgName = parts?.[1] ? encodeURIComponent(parts?.[1]) : '';
     const rest = parts?.slice(2)?.join('/');

@@ -11,7 +11,9 @@ import Runner from './Runner';
 import { useFetchReadme, defaultPkg, npmRegistry } from '../hooks/useRunnerEffects';
 import { useRef, useState, useEffect } from 'react';
 
+// --| Need this import for rehypeKatex package
 import 'katex/dist/katex.min.css';
+
 /**
  * NpmLogo React component
  *
@@ -181,11 +183,7 @@ const Sandbox = () => {
             </div>
 
             {initialCode ? (
-                <Runner
-                    key={`${currentPkg ?? ''}-${initialCode ?? ''}`}
-                    pkg={currentPkg ?? ''}
-                    initialCode={initialCode ?? ''}
-                />
+                <Runner key={`${currentPkg ?? ''}-${initialCode ?? ''}`} pkg={currentPkg ?? ''} initialCode={initialCode ?? ''} />
             ) : (
                 <div className="runner-loading">📦 Loading package...</div>
             )}

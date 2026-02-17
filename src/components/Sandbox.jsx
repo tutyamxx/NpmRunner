@@ -143,6 +143,7 @@ const Sandbox = () => {
     return (
         <div className="sandbox-grid">
             <div className="sandbox-readme">
+                <div className="search-label">Search <span className="search-label-npm">npm</span> package</div>
                 <div className="sandbox-search" ref={searchRef}>
                     <input
                         ref={inputRef}

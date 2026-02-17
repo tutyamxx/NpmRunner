@@ -56,7 +56,7 @@ export const buildImports = (code = '') => {
 
     // --| Regexes for ESM imports and require statements
     const importRegex = /import\s+(.*?)\s+from\s+['"](.*?)['"]/g;
-    const requireRegex = /(const|let|var)\s+(\{?.*?\}?)\s*=\s*require\(['"](.*?)['"]\)/g;
+    const requireRegex = /\b(const|let|var)\s+([A-Za-z_$][\w$]*|\{[^}]+\})\s*=\s*require\(\s*['"]([^'"]+)['"]\s*\)/g;
 
     const imports = [];
 

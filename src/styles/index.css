@@ -79,7 +79,7 @@ pre {
 }
 
 .sandbox-readme {
-    padding: 56px 16px 16px;
+    padding: 16px;
     border-right: 1px solid var(--border);
     overflow-y: auto;
     position: relative;
@@ -99,13 +99,13 @@ pre {
 }
 
 .sandbox-search {
-    position: absolute;
-    top: 16px;
-    left: 50%;
-    transform: translateX(-50%);
+    position: relative;
     width: 280px;
     max-width: 90%;
     z-index: 10;
+    display: flex;
+    flex-direction: column;
+    margin: 16px auto 0;
 }
 
 .sandbox-search .search-results {
@@ -457,4 +457,17 @@ body.light ::selection {
     justify-content: center;
     height: 100%;
     width: 100%;
+}
+
+.search-label {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 0.25rem;
+    text-align: center;
+}
+
+.search-label-npm {
+    color: #f87171;
+    font-weight: 800;
 }

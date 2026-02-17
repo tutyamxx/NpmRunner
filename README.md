@@ -60,8 +60,10 @@ Example usage:
 - [https://npmrunner.com/sandbox/is-valid-domain-extension](https://npmrunner.com/sandbox/is-valid-domain-extension)
 - [https://npmrunner.com/sandbox/long](https://npmrunner.com/sandbox/long)
 - [https://npmrunner.com/sandbox/mathml-tag-names](https://npmrunner.com/sandbox/mathml-tag-names)
+- [https://npmrunner.com/sandbox/data-with-position](https://npmrunner.com/sandbox/data-with-position)
+- [https://npmrunner.com/sandbox/skin-tone](https://npmrunner.com/sandbox/skin-tone)
 
-Just replace the `package name` in the URL.
+Type the package name in the search box or replace the `package name` in the URL as below.
 
 ```bash
 https://npmrunner.com/sandbox/<package name>

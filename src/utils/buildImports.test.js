@@ -103,16 +103,19 @@ describe('🏖️ buildImports', () => {
         expect(buildImports(undefined).transformedCode).toBe('');
     });
 
-    it('Generates importWrapper code with CDN fallback', () => {
+    it('Generates importWrapper code with CDN fallback (error only after both fail)', () => {
         code = `
             import _ from 'lodash';
         `;
 
         const { importLines } = buildImports(code);
 
-        expect(importLines).toContain('https://cdn.skypack.dev');
         expect(importLines).toContain('https://esm.sh');
-        expect(importLines).toContain('console.error');
+        expect(importLines).toContain('https://cdn.skypack.dev');
+
+        // --| Should only log error in final fallback
+        const errorMatches = importLines.match(/console\.error/g) || [];
+        expect(errorMatches.length).toBe(1);
     });
 
     it('Encodes scoped packages correctly', () => {

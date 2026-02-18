@@ -91,13 +91,11 @@ export const buildImports = (code = '') => {
             // --| Try esm.sh first — generally better for scoped packages
             ${varName} = await import('https://esm.sh/${encodeScopedPackage(pkg)}?bundle&target=es2022');
         } catch (err) {
-            console.error('[Package Error]', '${pkg}', err?.message ?? err, '⚠️ Might be expecting a Node runtime.');
-
             try {
                 // --| Fallback to Skypack only if esm.sh fails
                 ${varName} = await import('https://cdn.skypack.dev/${encodeScopedPackage(pkg)}');
             } catch (err2) {
-                console.error('[Package Error]', '${pkg}', err2?.message ?? err2, '⚠️ Failed to load.');
+                console.error('[Package Error]', '${pkg}', err2?.message ?? err2, '⚠️ Failed to run script. It might be expecting a node runtime.');
                 ${varName} = {};
             }
         }

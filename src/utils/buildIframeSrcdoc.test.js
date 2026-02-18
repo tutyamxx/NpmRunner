@@ -36,7 +36,7 @@ describe('🏖️ buildIframeSrcdoc', () => {
 
         expect(result).toContain('[\'log\', \'error\', \'warn\', \'info\'].forEach');
         expect(result).toContain('console[level] = (...args)');
-        expect(result).toContain('emit(level, args)');
+        expect(result).toContain('sandboxEmit(level, args)');
     });
 
     it('Secures postMessage with the current origin instead of "*"', () => {
@@ -69,7 +69,7 @@ describe('🏖️ buildIframeSrcdoc', () => {
 
         expect(result).toContain('try {');
         expect(result).toContain('catch (e)');
-        expect(result).toContain('emit(\'error\', [e])');
+        expect(result).toContain('sandboxEmit(\'error\', [e])');
     });
 
     it('Handles global errors and promise rejections', () => {
@@ -77,7 +77,7 @@ describe('🏖️ buildIframeSrcdoc', () => {
 
         expect(result).toContain('window.onerror');
         expect(result).toContain('window.onunhandledrejection');
-        expect(result).toContain('emit(\'error\', [error || msg])');
+        expect(result).toContain('sandboxEmit(\'error\', [error ?? msg])');
     });
 
     it('Notifies parent when execution is done with specific origin', () => {
@@ -101,11 +101,10 @@ describe('🏖️ buildIframeSrcdoc', () => {
         expect(result).toContain('safeStringify(arg)');
     });
 
-    it('Provides specific Error object serialization with stack traces', () => {
+    it('Provides specific Error object serialization with message', () => {
         result = buildIframeSrcdoc('', '');
 
         expect(result).toContain('obj instanceof Error');
-        expect(result).toContain('stack: obj.stack');
         expect(result).toContain('message: obj.message');
     });
 

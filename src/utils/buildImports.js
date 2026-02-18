@@ -17,10 +17,8 @@
  * @param {string} pkg - The raw npm package specifier (may be scoped and/or include subpaths).
  * @returns {string} A CDN-safe package path string suitable for import URLs.
  */
-const encodeScopedPackage = (pkg) => {
-    if (!pkg) return '';
-
-    // If it's not scoped, just encode the whole thing (standard behavior)
+const encodeScopedPackage = (pkg = '') => {
+    // --| If it's not scoped, just encode the whole thing (standard behavior)
     if (!pkg?.startsWith('@')) {
         return encodeURIComponent(pkg);
     }

@@ -27,7 +27,6 @@ export const buildIframeSrcdoc = (importLines, transformedCode) => {
                     return JSON.stringify({
                         name: obj.name,
                         message: obj.message,
-                        stack: obj.stack
                     }, null, 2);
                 }
 
@@ -38,7 +37,7 @@ export const buildIframeSrcdoc = (importLines, transformedCode) => {
         };
 
         const formatArg = (arg) => (typeof arg === 'object' && arg !== null ? safeStringify(arg) : String(arg));
-        const emit = (type, args) => parent.postMessage({ type, args: args.map(formatArg) }, '${appOrigin}');
+        const sandboxEmit = (type, args) => parent.postMessage({ type, args: args.map(formatArg) }, '${appOrigin}');
     `;
 
     return `
@@ -50,19 +49,22 @@ export const buildIframeSrcdoc = (importLines, transformedCode) => {
 
                 // --| Global Error Handling (for sync and async errors)
                 window.onerror = (msg, url, line, col, error) => {
-                    emit('error', [error || msg]);
+                    sandboxEmit('error', [error ?? msg]);
+
                     return false;
                 };
 
-                window.onunhandledrejection = (event) => emit('error', [event.reason || 'Unhandled Promise Rejection']);
+                window.onunhandledrejection = (event) => {
+                    sandboxEmit('error', [event?.reason ?? 'Unhandled Promise Rejection']);
+                }
 
                 // --| Centralized Console Overrides
                 ['log', 'error', 'warn', 'info'].forEach(level => {
-                    const original = console[level];
+                    const original = console?.[level];
 
                     console[level] = (...args) => {
-                        emit(level, args);
-                        original.apply(console, args);
+                        sandboxEmit(level, args);
+                        original?.apply(console, args);
                     };
                 });
 
@@ -77,7 +79,7 @@ export const buildIframeSrcdoc = (importLines, transformedCode) => {
 
                     } catch (e) {
                         // --| Catch any errors during import or execution
-                        emit('error', [e]);
+                        sandboxEmit('error', [e]);
                     } finally {
                         // --| Notify parent that execution has finished
                         parent.postMessage({ type: 'done' }, '${appOrigin}');

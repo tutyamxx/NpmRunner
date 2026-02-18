@@ -38,7 +38,7 @@
 
 ## ⚠️ Limitations
 
-- Scoped packages are supported, but browser-incompatible packages cannot be loaded. NPMRunner runs in a browser sandbox and will fail for Node-only or build-time packages (e.g., `@stdlib/*`, `@types/*`, `@babel/*`, `eslint*`, `webpack*`, and packages that depend on Node core modules like `fs`, `path`, or `crypto` etc.).
+- Scoped packages are supported, but browser-incompatible packages cannot be loaded, usually those that expect a Node runtime.
 - Native Node APIs (`fs`, `path`, `process`) are unavailable
 - Some packages expect a Node runtime
 - Not all `README` include runnable browser examples

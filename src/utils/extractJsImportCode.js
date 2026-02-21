@@ -1,7 +1,6 @@
 /**
  * Extract JavaScript code blocks that contain either:
- *  - at least one ES module `import` statement (priority)
- *  - or, if no imports exist in any block, CommonJS `require('package')` statements
+ *  - At least one ES module `import` statement (priority) or, if no imports exist in any block, CommonJS `require('package')` statements
  *
  * @param {string} markdown - The README markdown
  * @returns {string[]} Array of JS code blocks containing imports first, then requires

@@ -129,7 +129,9 @@ const Runner = ({ pkg, initialCode }) => {
 
                     <button onClick={clearEditor}>📝 Clear Editor</button>
                     <button onClick={clearConsole}>🧹 Clear Console</button>
-                    <button onClick={toggleTheme}>🌓 {theme === 'dark' ? 'Light' : 'Dark'} Theme</button>
+                    <button onClick={toggleTheme}>
+                        {theme === 'dark' ? '🌖' : '🌘'} {theme === 'dark' ? 'Light' : 'Dark'} Theme
+                    </button>
                 </div>
 
                 {/* Warnings */}

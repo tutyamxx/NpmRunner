@@ -2,6 +2,10 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { extractJsImportCode } from '../utils/extractJsImportCode';
 
+/**
+ * Default npm registry host.
+ * Used for resolving and downloading packages from the public npm registry.
+ */
 export const npmRegistry = 'registry.npmjs.org';
 
 /**

@@ -9,7 +9,7 @@ on:
       - main
 
 env:
-  NODE_VERSION: 'lts/*'
+  NODE_VERSION: 'lts/krypton'
 
 jobs:
   stylelint:

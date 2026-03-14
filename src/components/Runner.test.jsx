@@ -136,4 +136,15 @@ describe('🏖️ Runner Component', () => {
         expect(rtlScreen.getByText(/Syntax Error:/i)).toBeInTheDocument();
         expect(runButton).not.toBeDisabled();
     });
+
+    it('Shows fancy "Building bundle" message while code is running', async () => {
+        renderWithTheme(<Runner pkg="test-package" initialCode="console.log('hi');" />);
+
+        const runButton = rtlScreen.getByRole('button', { name: /run/i });
+        fireEvent.click(runButton);
+
+        const fancyMessage = document.querySelector('.runner-loading-fancy-container');
+        expect(fancyMessage).toBeInTheDocument();
+        expect(fancyMessage).toHaveTextContent(/building bundle/i);
+    });
 });

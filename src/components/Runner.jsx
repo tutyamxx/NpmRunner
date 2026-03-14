@@ -101,23 +101,20 @@ const Runner = ({ pkg, initialCode }) => {
             {/* Console */}
             <div className="runner-console">
                 <div className="runner-buttons">
-                    <button onClick={run} disabled={loading}>
+                    <button onClick={run} disabled={loading} className="runner-button-run">
                         {loading ? (
                             <>
-                                {/* Spinner */}
                                 <div className="loader">
                                     <svg
                                         className="spinner"
                                         viewBox="0 0 24 24"
-                                        width="60"
-                                        height="60"
+                                        width="24"
+                                        height="24"
                                     >
-                                        {/* Thick outer gear */}
                                         <path
                                             fill="#e10600"
                                             d="M20.5 13.5c.04-.5.07-1 .07-1.5s-.03-1-.07-1.5l2-1.6c.2-.16.25-.44.12-.67l-2.2-3.8a.5.5 0 00-.6-.22l-2.4 1a8.6 8.6 0 00-2.1-1.2l-.4-2.6A.5.5 0 0014.4 1h-4.8a.5.5 0 00-.5.42l-.4 2.6a8.6 8.6 0 00-2.1 1.2l-2.4-1a.5.5 0 00-.6.22l-2.2 3.8c-.13.23-.08.5.12.67l2 1.6c-.04.5-.07 1-.07 1.5s.03 1 .07 1.5l-2 1.6a.5.5 0 00-.12.67l2.2 3.8c.13.23.4.32.6.22l2.4-1c.64.5 1.35.9 2.1 1.2l.4 2.6c.05.24.26.42.5.42h4.8c.24 0 .45-.18.5-.42l.4-2.6c.75-.3 1.46-.7 2.1-1.2l2.4 1c.2.1.47 0 .6-.22l2.2-3.8a.5.5 0 00-.12-.67l-2-1.6z"
                                         />
-                                        {/* Thick inner hub */}
                                         <circle cx="12" cy="12" r="4.5" fill="#ffffff" />
                                     </svg>
                                 </div>
@@ -132,6 +129,15 @@ const Runner = ({ pkg, initialCode }) => {
                     <button onClick={toggleTheme}>
                         {theme === 'dark' ? '🌖' : '🌘'} {theme === 'dark' ? 'Light' : 'Dark'} Theme
                     </button>
+
+                    {loading && (
+                        <div className="runner-loading-fancy-container">
+                            <div className="runner-loading-fancy">
+                                <div className="runner-loading-spinner"></div>
+                                    🛠️ Building bundle… please wait
+                            </div>
+                        </div>
+                    )}
                 </div>
 
                 {/* Warnings */}

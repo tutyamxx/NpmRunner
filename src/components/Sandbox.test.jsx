@@ -12,6 +12,13 @@ vi.mock('./Runner', () => ({
     )
 }));
 
+// --| Mock KaTeX CSS import so tests don't try to append to document.head
+vi.mock('katex/dist/katex.min.css', () => ({}));
+vi.mock('rehype-katex', () => ({
+    __esModule: true,
+    default: () => null
+}));
+
 import Sandbox from './Sandbox';
 
 const mockFetch = (body) => vi.fn()

@@ -12,9 +12,6 @@ import Runner from './Runner';
 import { useFetchReadme, defaultPkg, npmRegistry } from '../hooks/useRunnerEffects';
 import { useRef, useState, useEffect } from 'react';
 
-// --| Need this import for rehypeKatex package
-import 'katex/dist/katex.min.css';
-
 /**
  * NpmLogo React component
  *
@@ -76,6 +73,14 @@ const Sandbox = () => {
 
     // --| Repository URL used for fixing GitHub asset paths
     const [repositoryUrl, setRepositoryUrl] = useState(null);
+
+    // --| Need this import for rehypeKatex package
+    // --| Load KaTeX CSS only in browser after mount
+    useEffect(() => {
+        if (typeof document !== 'undefined') {
+            import('katex/dist/katex.min.css');
+        }
+    }, []);
 
     // --| Prefill search box when pkg changes
     useEffect(() => setQuery(currentPkg ?? ''), [currentPkg]);

@@ -60,68 +60,73 @@ export const buildImports = (code = '') => {
 
     // --| Extract ESM import statements
     for (const match of code.matchAll(importRegex)) {
-        imports?.push({ specifier: match?.[1], packageName: match?.[2] });
+        imports.push({ specifier: match?.[1]?.trim(), packageName: match?.[2] });
     }
 
     // --| Extract require statements as default or destructured imports
     for (const match of code.matchAll(requireRegex)) {
-        imports?.push({ specifier: match?.[2], packageName: match?.[3] });
+        imports.push({ specifier: match?.[2]?.trim(), packageName: match?.[3] });
     }
 
     // --| Remove original import/require statements
-    let transformedCode = code?.replace(importRegex, '')?.replace(requireRegex, '');
+    let transformedCode = code.replace(importRegex, '').replace(requireRegex, '');
 
     // --| Transform remaining inline require() calls into dynamic imports
     transformedCode = transformedCode.replace(
         /require\(['"](.*?)['"]\)/g,
-
-        (_, pkgName) => {
-            const safePkg = encodeScopedPackage(pkgName);
-            const url = `https://esm.sh/${safePkg}@latest?bundle`;
-
-            return `(await import('${url}'))?.default ?? (await import('${url}'))`;
-        }
+        (_, pkg) => `await import('https://esm.sh/${encodeScopedPackage(pkg)}?bundle')`
     );
 
-    // --| Wrapper to try multiple CDNs for a package
-    const importWrapper = (varName, pkg) => `
-        let ${varName};
-
-        try {
-            // --| Try esm.sh first — generally better for scoped packages
-            ${varName} = await import('https://esm.sh/${encodeScopedPackage(pkg)}?bundle&target=es2022');
-        } catch (err) {
-            try {
-                // --| Fallback to Skypack only if esm.sh fails
-                ${varName} = await import('https://cdn.skypack.dev/${encodeScopedPackage(pkg)}');
-            } catch (err2) {
-                console.error('[Package Error]', '${pkg}', err2?.message ?? err2, '⚠️ Failed to run script. It might be expecting a node runtime.');
-                ${varName} = {};
-            }
+    // --| Generate parallel import lines with Promise.any but keep try/catch logs
+    const importLines = imports.map(({ specifier, packageName }) => {
+        if (!specifier) {
+            return '';
         }
-    `;
 
-    // --| Generate import lines dynamically, handling default + named + destructured imports
-    const importLines = imports?.map(({ packageName, specifier }) => {
-        const trimmedSpecifier = specifier?.trim();
-        const safeVar = trimmedSpecifier?.replace(/\W/g, '_');
+        const safeVar = specifier?.replace(/\W/g, '_');
+        const isDestructured = specifier?.startsWith('{') && specifier?.endsWith('}');
+
+        const wrapper = `
+            let skypack_${safeVar};
+
+            try {
+                // --| Try esm.sh and Skypack in parallel for speed
+                skypack_${safeVar} = await Promise.any([
+                    import('https://esm.sh/${encodeScopedPackage(packageName)}?bundle&target=es2022'),
+                    import('https://cdn.skypack.dev/${encodeScopedPackage(packageName)}')
+                ]);
+            } catch (err) {
+                console.error(
+                    '[Package Error]',
+                    '${packageName}',
+                    '⚠️ Failed to run script. It might be expecting a node runtime.'
+                );
+
+                if (err?.errors) {
+                    for (const e of err.errors) {
+                        console.error(e?.message ?? e?.code ?? e);
+                    }
+                }
+
+                skypack_${safeVar} = {};
+            }
+        `;
 
         // --| Destructured imports
-        if (trimmedSpecifier?.startsWith('{') && trimmedSpecifier?.endsWith('}')) {
-            const names = trimmedSpecifier?.replace(/[{}]/g, '')?.trim();
+        if (isDestructured) {
+            const names = specifier.replace(/[{}]/g, '')?.trim();
 
-            return `
-                ${importWrapper('skypackModule', packageName)}
-                const { ${names} } = skypackModule?.default ?? skypackModule ?? {};
-            `;
+            return `${wrapper}\nconst { ${names} } = skypack_${safeVar}?.default ?? skypack_${safeVar} ?? {};`;
         }
 
         // --| Default import / require import
-        return `
-            ${importWrapper(`skypackModule_${safeVar}`, packageName)}
-            const ${trimmedSpecifier} = skypackModule_${safeVar}?.default ?? skypackModule_${safeVar} ?? {};
-        `;
-    })?.join('\n');
+        const validIdentifier = /^[A-Za-z_$][\w$]*$/.test(specifier);
+        if (!validIdentifier) {
+            return `${wrapper}\n// ⚠️ Skipped invalid variable name: ${specifier}`;
+        }
+
+        return `${wrapper}\nconst ${specifier} = skypack_${safeVar}?.default ?? skypack_${safeVar} ?? {};`;
+    }).join('\n');
 
     return { importLines, transformedCode };
 };

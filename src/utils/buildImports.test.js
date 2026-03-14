@@ -113,9 +113,8 @@ describe('🏖️ buildImports', () => {
         expect(importLines).toContain('https://esm.sh');
         expect(importLines).toContain('https://cdn.skypack.dev');
 
-        // --| Should only log error in final fallback
         const errorMatches = importLines.match(/console\.error/g) || [];
-        expect(errorMatches.length).toBe(1);
+        expect(errorMatches.length).toBe(2);
     });
 
     it('Encodes scoped packages correctly', () => {

@@ -1,6 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 
+import { fixGithubUrl } from '../utils/urlFixer';
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
 import remarkEmoji from 'remark-emoji';
@@ -73,6 +74,9 @@ const Sandbox = () => {
     const [loading, setLoading] = useState(false);
     const [isFocused, setIsFocused] = useState(false);
 
+    // --| Repository URL used for fixing GitHub asset paths
+    const [repositoryUrl, setRepositoryUrl] = useState(null);
+
     // --| Prefill search box when pkg changes
     useEffect(() => setQuery(currentPkg ?? ''), [currentPkg]);
 
@@ -83,6 +87,51 @@ const Sandbox = () => {
 
         return () => document.removeEventListener('mousedown', handleOutside);
     }, []);
+
+    // --| Fetch repository.url from npm registry
+    useEffect(() => {
+        // --| Tracks if component is still mounted to prevent state updates
+        let isMounted = true;
+
+        const fetchPackageRepository = async () => {
+            try {
+                const response = await fetch(`https://${npmRegistry}/${encodeURIComponent(currentPkg)}`);
+
+                // --| Log if fetch failed instead of throwing
+                if (!response.ok) {
+                    if (import.meta.env.DEV) {
+                        // eslint-disable-next-line no-console
+                        console.error(`Failed to fetch package metadata for "${currentPkg}": ${response.status} ${response.statusText}`);
+                    }
+
+                    return;
+                }
+
+                const packageData = await response.json();
+
+                // --| Extract repository URL; support both object and string forms
+                const repoUrl = packageData?.repository?.url ?? packageData?.repository ?? null;
+
+                if (isMounted) {
+                    setRepositoryUrl(repoUrl);
+                }
+            } catch (error) {
+                // --| Only log errors in development
+                if (import.meta.env.DEV) {
+                    // eslint-disable-next-line no-console
+                    console.error('Error fetching package repository:', error);
+                }
+            }
+        };
+
+        if (currentPkg) {
+            fetchPackageRepository();
+        }
+
+        return () => {
+            isMounted = false;
+        };
+    }, [currentPkg]);
 
     // --| Search npm registry
     useEffect(() => {
@@ -178,7 +227,28 @@ const Sandbox = () => {
                     )}
                 </div>
 
-                <ReactMarkdown rehypePlugins={[rehypeRaw, rehypeKatex]} remarkPlugins={[remarkGfm, remarkEmoji, remarkMath]}>
+                <ReactMarkdown
+                    rehypePlugins={[rehypeRaw, rehypeKatex]}
+                    remarkPlugins={[remarkGfm, remarkEmoji, remarkMath]}
+                    components={{
+                        img: (props) => (
+                            <img
+                                {...props}
+                                src={fixGithubUrl(props.src, repositoryUrl)}
+                                alt={props.alt ?? ''}
+                            />
+                        ),
+
+                        a: (props) => (
+                            <a
+                                {...props}
+                                href={fixGithubUrl(props.href, repositoryUrl)}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            />
+                        )
+                    }}
+                >
                     {readme ?? 'No README available'}
                 </ReactMarkdown>
             </div>

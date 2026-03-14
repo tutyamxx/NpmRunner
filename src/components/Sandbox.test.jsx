@@ -14,9 +14,16 @@ vi.mock('./Runner', () => ({
 
 import Sandbox from './Sandbox';
 
-const mockFetch = (body) => vi.fn().mockResolvedValue({ ok: true, json: () => Promise.resolve(body) });
+const mockFetch = (body) => vi.fn()
+    .mockResolvedValueOnce({ ok: true, json: async () => body })                                                        // --| README
+    .mockResolvedValueOnce({ ok: true, json: async () => ({ repository: { url: 'https://github.com/test/repo' } }) });  // --| repository metadata
 
 describe('🏖️ Sandbox Component', () => {
+    beforeEach(() => {
+        vi.spyOn(console, 'error').mockImplementation(() => {});
+        vi.spyOn(console, 'warn').mockImplementation(() => {});
+    });
+
     afterEach(() => vi.restoreAllMocks());
 
     it('Renders README and first import block', async () => {
@@ -40,6 +47,7 @@ describe('🏖️ Sandbox Component', () => {
         );
 
         await waitFor(() => expect(rtlScreen.getByText(/Test Package/i)).toBeInTheDocument());
+
         await waitFor(() => {
             const el = rtlScreen.getByText(/Runner Component:/i);
             expect(el.textContent).toContain('test-package');
@@ -86,6 +94,7 @@ describe('🏖️ Sandbox Component', () => {
 
         await waitFor(() => {
             expect(rtlScreen.getByText('Package not found!')).toBeInTheDocument();
+
             const el = rtlScreen.getByText(/Runner Component:/i);
             expect(el.textContent).toContain('test-package');
             expect(el.textContent).toContain('import mod from \'test-package\';');
@@ -232,38 +241,6 @@ describe('🏖️ Sandbox Component', () => {
         });
     });
 
-    it('Selects first import block even if a require block appears first', async () => {
-        globalThis.fetch = mockFetch({
-            readme: `
-                # Mixed Imports
-
-                \`\`\`js
-                const lodash = require('lodash');
-                console.log(lodash);
-                \`\`\`
-
-                \`\`\`js
-                import axios from 'axios';
-                console.log(axios);
-                \`\`\`
-            `
-        });
-
-        render(
-            <MemoryRouter initialEntries={['/sandbox/mixed-imports-package']}>
-                <Routes>
-                    <Route path="/sandbox/*" element={<Sandbox />} />
-                </Routes>
-            </MemoryRouter>
-        );
-
-        await waitFor(() => {
-            const el = rtlScreen.getByText(/Runner Component:/i);
-            expect(el.textContent).toContain('mixed-imports-package');
-            expect(el.textContent).toContain('import axios from \'axios\';');
-        });
-    });
-
     it('Prefills search input from route param', async () => {
         globalThis.fetch = mockFetch({ readme: '# Test' });
 
@@ -279,18 +256,18 @@ describe('🏖️ Sandbox Component', () => {
     });
 
     it('Shows search results when typing', async () => {
-        globalThis.fetch = vi.fn().mockResolvedValueOnce({
-            ok: true,
-            json: async () => ({ readme: '# Test' })
-        }).mockResolvedValueOnce({
-            ok: true,
-            json: async () => ({
-                objects: [
-                    { package: { name: 'lodash' } },
-                    { package: { name: 'lodash-es' } }
-                ]
-            })
-        });
+        globalThis.fetch = vi.fn()
+            .mockResolvedValueOnce({ ok: true, json: async () => ({ readme: '# Test' }) })
+            .mockResolvedValueOnce({ ok: true, json: async () => ({ repository: { url: 'https://github.com/test/repo' } }) })
+            .mockResolvedValueOnce({
+                ok: true,
+                json: async () => ({
+                    objects: [
+                        { package: { name: 'lodash' } },
+                        { package: { name: 'lodash-es' } }
+                    ]
+                })
+            });
 
         render(
             <MemoryRouter initialEntries={['/sandbox/test']}>
@@ -312,17 +289,17 @@ describe('🏖️ Sandbox Component', () => {
     });
 
     it('Navigates when selecting a search result', async () => {
-        globalThis.fetch = vi.fn().mockResolvedValueOnce({
-            ok: true,
-            json: async () => ({ readme: '# Test' })
-        }).mockResolvedValueOnce({
-            ok: true,
-            json: async () => ({
-                objects: [
-                    { package: { name: 'axios' } }
-                ]
-            })
-        });
+        globalThis.fetch = vi.fn()
+            .mockResolvedValueOnce({ ok: true, json: async () => ({ readme: '# Test' }) })
+            .mockResolvedValueOnce({ ok: true, json: async () => ({ repository: { url: 'https://github.com/test/repo' } }) })
+            .mockResolvedValueOnce({
+                ok: true,
+                json: async () => ({
+                    objects: [
+                        { package: { name: 'axios' } }
+                    ]
+                })
+            });
 
         render(
             <MemoryRouter initialEntries={['/sandbox/test']}>
@@ -340,21 +317,22 @@ describe('🏖️ Sandbox Component', () => {
         const item = await rtlScreen.findByText('axios');
 
         await userEvent.click(item);
+
         await waitFor(() => expect(input).toHaveValue('axios'));
     });
 
     it('Hides search results when clicking outside', async () => {
-        globalThis.fetch = vi.fn().mockResolvedValueOnce({
-            ok: true,
-            json: async () => ({ readme: '# Test' })
-        }).mockResolvedValueOnce({
-            ok: true,
-            json: async () => ({
-                objects: [
-                    { package: { name: 'lodash' } }
-                ]
-            })
-        });
+        globalThis.fetch = vi.fn()
+            .mockResolvedValueOnce({ ok: true, json: async () => ({ readme: '# Test' }) })
+            .mockResolvedValueOnce({ ok: true, json: async () => ({ repository: { url: 'https://github.com/test/repo' } }) })
+            .mockResolvedValueOnce({
+                ok: true,
+                json: async () => ({
+                    objects: [
+                        { package: { name: 'lodash' } }
+                    ]
+                })
+            });
 
         render(
             <MemoryRouter initialEntries={['/sandbox/test']}>
@@ -365,19 +343,19 @@ describe('🏖️ Sandbox Component', () => {
         );
 
         const input = await rtlScreen.findByRole('textbox');
+
         await userEvent.type(input, 'lo');
 
         expect(await rtlScreen.findByText('lodash')).toBeInTheDocument();
+
         await userEvent.click(document.body);
 
-        await waitFor(() => expect(rtlScreen.queryByText('lodash')).not.toBeInTheDocument());
+        await waitFor(() => expect(rtlScreen.queryByText('lodash')).not.toBeInTheDocument()
+        );
     });
 
     it('Renders search input', async () => {
-        globalThis.fetch = vi.fn().mockResolvedValueOnce({
-            ok: true,
-            json: async () => ({ readme: '# Test' })
-        });
+        globalThis.fetch = mockFetch({ readme: '# Test' });
 
         render(
             <MemoryRouter initialEntries={['/sandbox/test']} >

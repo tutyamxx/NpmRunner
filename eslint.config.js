@@ -53,8 +53,7 @@ export default defineConfig([
                 properties: 'never',
                 ignoreDestructuring: false,
                 ignoreImports: true,
-                ignoreGlobals: false,
-                allow: ['^ExceedLMS_', '^Salesforce_', '^SkytapCM_', 'db_']
+                ignoreGlobals: false
             }],
             'comma-spacing': ['error', { before: false, after: true }],
             'capitalized-comments': ['error', 'always'],

@@ -16,17 +16,13 @@
 <p align="center">
   <a href="https://reactjs.org/">
     <img src="https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=black" alt="React" />
-  </a>
-  <a href="https://vitejs.dev/">
+  </a><a href="https://vitejs.dev/">
     <img src="https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white" alt="Vite" />
-  </a>
-  <a href="https://jestjs.io/">
+  </a><a href="https://jestjs.io/">
     <img src="https://img.shields.io/badge/Jest-C21325?style=for-the-badge&logo=jest&logoColor=white" alt="Jest" />
-  </a>
-  <a href="https://vercel.com/">
+  </a><a href="https://vercel.com/">
     <img src="https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white" alt="Vercel" />
-  </a>
-  <a href="https://eslint.org/">
+  </a><a href="https://eslint.org/">
     <img src="https://img.shields.io/badge/ESLint-4B32C3?style=for-the-badge&logo=eslint&logoColor=white" alt="ESLint" />
   </a>
 </p>

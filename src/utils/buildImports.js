@@ -69,16 +69,16 @@ export const buildImports = (code = '') => {
     }
 
     // --| Remove original import/require statements
-    let transformedCode = code.replace(importRegex, '').replace(requireRegex, '');
+    let transformedCode = code?.replace(importRegex, '')?.replace(requireRegex, '');
 
     // --| Transform remaining inline require() calls into dynamic imports
-    transformedCode = transformedCode.replace(
+    transformedCode = transformedCode?.replace(
         /require\(['"](.*?)['"]\)/g,
         (_, pkg) => `await import('https://esm.sh/${encodeScopedPackage(pkg)}?bundle')`
     );
 
     // --| Generate parallel import lines with Promise.any but keep try/catch logs
-    const importLines = imports.map(({ specifier, packageName }) => {
+    const importLines = imports?.map(({ specifier, packageName }) => {
         if (!specifier) {
             return '';
         }
@@ -96,11 +96,7 @@ export const buildImports = (code = '') => {
                     import('https://cdn.skypack.dev/${encodeScopedPackage(packageName)}')
                 ]);
             } catch (err) {
-                console.error(
-                    '[Package Error]',
-                    '${packageName}',
-                    '⚠️ Failed to run script. It might be expecting a node runtime.'
-                );
+                console.error('[Package Error]', '${packageName}', '⚠️ Failed to run script. It might be expecting a node runtime.');
 
                 if (err?.errors) {
                     for (const e of err.errors) {
@@ -108,24 +104,25 @@ export const buildImports = (code = '') => {
                     }
                 }
 
-                skypack_${safeVar} = {};
+                skypack_${safeVar} = { };
             }
         `;
 
         // --| Destructured imports
         if (isDestructured) {
-            const names = specifier.replace(/[{}]/g, '')?.trim();
+            const names = specifier?.replace(/[{}]/g, '')?.trim();
 
             return `${wrapper}\nconst { ${names} } = skypack_${safeVar}?.default ?? skypack_${safeVar} ?? {};`;
         }
 
         // --| Default import / require import
         const validIdentifier = /^[A-Za-z_$][\w$]*$/.test(specifier);
+
         if (!validIdentifier) {
-            return `${wrapper}\n// ⚠️ Skipped invalid variable name: ${specifier}`;
+            return `${wrapper}\n// --| ⚠️ Skipped invalid variable name: ${specifier}`;
         }
 
-        return `${wrapper}\nconst ${specifier} = skypack_${safeVar}?.default ?? skypack_${safeVar} ?? {};`;
+        return `${wrapper}\nconst ${specifier} = skypack_${safeVar}?.default ?? skypack_${safeVar} ?? { };`;
     }).join('\n');
 
     return { importLines, transformedCode };

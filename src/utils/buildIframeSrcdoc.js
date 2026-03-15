@@ -7,7 +7,6 @@ import { getCircularReplacer } from '../hooks/useRunnerEffects';
  * - Overrides `console.log` and `console.error` to post messages to the parent.
  * - Safely stringifies objects to handle circular references.
  * - Injects dynamic import lines and transformed user code.
- * TODO: Add more stuff and properly check for things
  *
  * @param {string} importLines - JS lines to dynamically import modules before running user code.
  * @param {string} transformedCode - The transformed user code to execute inside the iframe.
@@ -15,10 +14,10 @@ import { getCircularReplacer } from '../hooks/useRunnerEffects';
  */
 export const buildIframeSrcdoc = (importLines, transformedCode) => {
     // --| Capture the parent origin to secure postMessage communication
-    const appOrigin = window.location.origin;
+    const appOrigin = window?.location?.origin;
 
     const internalHelpers = `
-        const replacer = (${getCircularReplacer.toString()})();
+        const replacer = (${getCircularReplacer?.toString()})();
 
         const safeStringify = (obj) => {
             try {

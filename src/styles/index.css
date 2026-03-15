@@ -498,15 +498,14 @@ body.light ::selection {
     font-weight: 500;
 }
 
-/* Container ensures the message is always under buttons */
 .runner-loading-fancy-container {
     width: 100%;
     display: flex;
     justify-content: center;
-    margin-top: 10px; /* space below buttons */
+    margin-top: 10px;
+    padding-bottom: 10px;
 }
 
-/* Fancy pill-style message */
 .runner-loading-fancy {
     display: inline-flex;
     align-items: center;
@@ -521,7 +520,6 @@ body.light ::selection {
     animation: fadeIn 0.3s ease-out;
 }
 
-/* Small spinner inside pill */
 .runner-loading-spinner {
     width: 16px;
     height: 16px;

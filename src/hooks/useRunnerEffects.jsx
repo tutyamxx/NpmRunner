@@ -16,7 +16,7 @@ export const defaultPkg = 'contains-emoji';
 /**
  * Custom hook to fetch README and derive initial runner code
  *
- * @param {string} pkg - NPM package name
+ * @param   {string}                                  pkg - NPM package name
  * @returns {{ readme: string, initialCode: string }}
  */
 export const useFetchReadme = (pkg) => {
@@ -95,9 +95,9 @@ export const getInitialTheme = () => ['light', 'dark'].includes(localStorage?.ge
 /**
  * Custom React hook that automatically hides a notification after a specified duration.
  *
- * @param {string} notification - The current notification message.
+ * @param {string}                 notification    - The current notification message.
  * @param {function(string): void} setNotification - Function to update the notification state.
- * @param {number} [duration=3000] - Time in milliseconds before the notification is cleared. Defaults to 3000ms.
+ * @param {number}                 [duration=3000] - Time in milliseconds before the notification is cleared. Defaults to 3000ms.
  *
  * @example
  * const [notification, setNotification] = useState('');
@@ -155,8 +155,8 @@ export const getCircularReplacer = () => {
  * - Updates a logs state array with objects containing `type` ('log' | 'error') and formatted `text`.
  * - Stops a loading state when a message of type `'done'` is received.
  *
- * @param {function(Array<{type: string, text: string}>): void} setLogs - State setter for logs array.
- * @param {function(boolean): void} setLoading - State setter for loading indicator.
+ * @param {function(Array<{type: string, text: string}>): void} setLogs    - State setter for logs array.
+ * @param {function(boolean): void}                             setLoading - State setter for loading indicator.
  *
  * @example
  * const [logs, setLogs] = useState([]);
@@ -201,9 +201,9 @@ export const useIframeListener = (setLogs, setLoading) => {
  *
  * This is useful for initializing a code editor or similar component with default content.
  *
- * @param {string} initialCode - The initial code value to set.
- * @param {string} code - The current code state.
- * @param {function(string): void} setCode - Function to update the code state.
+ * @param {string}                 initialCode - The initial code value to set.
+ * @param {string}                 code        - The current code state.
+ * @param {function(string): void} setCode     - Function to update the code state.
  *
  * @example
  * const [code, setCode] = useState('');

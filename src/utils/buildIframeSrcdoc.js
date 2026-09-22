@@ -8,9 +8,9 @@ import { getCircularReplacer } from '../hooks/useRunnerEffects';
  * - Safely stringifies objects to handle circular references.
  * - Injects dynamic import lines and transformed user code.
  *
- * @param {string} importLines - JS lines to dynamically import modules before running user code.
- * @param {string} transformedCode - The transformed user code to execute inside the iframe.
- * @returns {string} The full HTML string for the iframe's `srcdoc`.
+ * @param   {string} importLines     - JS lines to dynamically import modules before running user code.
+ * @param   {string} transformedCode - The transformed user code to execute inside the iframe.
+ * @returns {string}                 The full HTML string for the iframe's `srcdoc`.
  */
 export const buildIframeSrcdoc = (importLines, transformedCode) => {
     // --| Capture the parent origin to secure postMessage communication

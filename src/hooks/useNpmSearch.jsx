@@ -4,8 +4,8 @@ import { npmRegistry } from './useRunnerEffects';
 /**
  * Performs debounced search on the npm registry for a given query.
  *
- * @param {string} query - The search query string
- * @returns {Object} { results, loading, clearResults }
+ * @param   {string} query - The search query string
+ * @returns {Object}       { results, loading, clearResults }
  */
 export const useNpmSearch = (query) => {
     // --| Search results state
@@ -16,6 +16,7 @@ export const useNpmSearch = (query) => {
         const trimmedQuery = query?.trim();
 
         if (!trimmedQuery || trimmedQuery.length < 2) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setResults([]);
             setLoading(false);
 

@@ -1,9 +1,9 @@
 /**
  * Extract JavaScript code blocks that contain either:
- *  - At least one ES module `import` statement (priority) or, if no imports exist in any block, CommonJS `require('package')` statements
+ * - At least one ES module `import` statement (priority) or, if no imports exist in any block, CommonJS `require('package')` statements
  *
- * @param {string} markdown - The README markdown
- * @returns {string[]} Array of JS code blocks containing imports first, then requires
+ * @param   {string}   markdown - The README markdown
+ * @returns {string[]}          Array of JS code blocks containing imports first, then requires
  */
 export const extractJsImportCode = (markdown) => {
     const regex = /```(?:js|javascript)\s*([\s\S]*?)```/gi;

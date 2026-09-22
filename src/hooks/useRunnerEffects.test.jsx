@@ -140,7 +140,7 @@ describe('🏖️ useRunnerEffects hooks', () => {
         expect(circularResult[0].text).toContain('[Circular]');
 
         // --| Object with broken toJSON
-        const badObj = { toJSON() {
+        const badObj = { toJSON: () => {
             throw new Error('Cannot stringify');
         } };
 

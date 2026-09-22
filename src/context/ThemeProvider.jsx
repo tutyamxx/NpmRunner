@@ -48,9 +48,9 @@ ThemeProvider.propTypes = {
  * Must be used within a {@link ThemeProvider}, otherwise it will throw.
  *
  * @returns {{
- *   theme: 'light' | 'dark',
- *   setTheme: React.Dispatch<React.SetStateAction<'light' | 'dark'>>,
- *   toggleTheme: () => void
+ * theme: 'light' | 'dark',
+ * setTheme: React.Dispatch<React.SetStateAction<'light' | 'dark'>>,
+ * toggleTheme: () => void
  * }}
  *
  * @throws {Error} If used outside of a ThemeProvider.

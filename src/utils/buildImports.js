@@ -3,19 +3,19 @@
  *
  * Behavior:
  * - **Unscoped packages**: the entire package specifier is URL-encoded.
- *   e.g., `my pkg` → `my%20pkg`
+ * e.g., `my pkg` → `my%20pkg`
  * - **Scoped packages** (`@scope/pkg`): the `@scope/` segment is preserved as-is,
- *   the package name is URL-encoded, and any additional subpaths are preserved literally.
+ * the package name is URL-encoded, and any additional subpaths are preserved literally.
  * - **Subpaths**: any segments after the package name are not encoded and remain unchanged.
  *
  * Examples:
- *   "lodash" → "lodash"
- *   "@types/node" → "@types/node"
- *   "@scope/pkg/sub/path" → "@scope/pkg/sub/path"
- *   "@scope/pkg/a b" → "@scope/pkg/a b"  // package name encoded if contains special chars
+ * "lodash" → "lodash"
+ * "@types/node" → "@types/node"
+ * "@scope/pkg/sub/path" → "@scope/pkg/sub/path"
+ * "@scope/pkg/a b" → "@scope/pkg/a b"  // package name encoded if contains special chars
  *
- * @param {string} pkg - The raw npm package specifier (may be scoped and/or include subpaths).
- * @returns {string} A CDN-safe package path string suitable for import URLs.
+ * @param   {string} pkg - The raw npm package specifier (may be scoped and/or include subpaths).
+ * @returns {string}     A CDN-safe package path string suitable for import URLs.
  */
 const encodeScopedPackage = (pkg = '') => {
     // --| If it's not scoped, just encode the whole thing (standard behavior)
@@ -45,8 +45,8 @@ const encodeScopedPackage = (pkg = '') => {
 /**
  * Build dynamic import lines for the runner iframe
  *
- * @param {string} code - Full user code
- * @returns {string} - JS snippet with all import statements
+ * @param   {string} code - Full user code
+ * @returns {string}      - JS snippet with all import statements
  */
 export const buildImports = (code = '') => {
     // --| Safely default null/undefined code

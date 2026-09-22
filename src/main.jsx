@@ -6,8 +6,18 @@ import { defaultPkg } from './hooks/useRunnerEffects';
 import { ThemeProvider } from './context/ThemeProvider';
 import './styles/index.css';
 
+/**
+ * Creates the React application root element.
+ *
+ * @returns {void}
+ */
 const root = createRoot(document.getElementById('root'));
 
+/**
+ * Renders the React application with theme and routing providers.
+ *
+ * @returns {void}
+ */
 root.render(
     <ThemeProvider>
         <BrowserRouter>

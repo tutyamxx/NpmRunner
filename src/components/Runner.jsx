@@ -18,7 +18,7 @@ import { parse } from 'acorn';
  * dynamically loads imports via ESM, and displays logs.
  *
  * @param {Object} props
- * @param {string} props.pkg - NPM package name
+ * @param {string} props.pkg           - NPM package name
  * @param {string} [props.initialCode] - Optional initial code to pre-fill editor
  * @component
  */
@@ -134,7 +134,7 @@ const Runner = ({ pkg, initialCode }) => {
                         <div className="runner-loading-fancy-container">
                             <div className="runner-loading-fancy">
                                 <div className="runner-loading-spinner"></div>
-                                    🛠️ Building bundle… please wait
+                                🛠️ Building bundle… please wait
                             </div>
                         </div>
                     )}

@@ -4,8 +4,8 @@ import { npmRegistry } from './useRunnerEffects';
 /**
  * Fetches the repository URL for a given npm package.
  *
- * @param {string} currentPkg - Name of the npm package
- * @returns {string|null} repositoryUrl
+ * @param   {string}      currentPkg - Name of the npm package
+ * @returns {string|null}            repositoryUrl
  */
 export const usePackageRepository = (currentPkg) => {
     const [repositoryUrl, setRepositoryUrl] = useState(null);

@@ -21,9 +21,9 @@ import { useRef, useState, useEffect } from 'react';
  * The badge is a red rectangle with the "npm" wordmark centered in white.
  * Height is adjustable via props while maintaining the aspect ratio.
  *
- * @param {Object} props - Component props
- * @param {number} [props.height=14] - Height of the SVG in pixels. Width scales automatically to maintain aspect ratio.
- * @returns {JSX.Element} The SVG element representing the npm logo
+ * @param   {Object}      props             - Component props
+ * @param   {number}      [props.height=14] - Height of the SVG in pixels. Width scales automatically to maintain aspect ratio.
+ * @returns {JSX.Element}                   The SVG element representing the npm logo
  */
 const NpmLogo = ({ height = 14 }) => (
     <svg
@@ -86,6 +86,7 @@ const Sandbox = () => {
     }, []);
 
     // --| Prefill search box when pkg changes
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     useEffect(() => setQuery(currentPkg ?? ''), [currentPkg]);
 
     // --| Hide suggestions on click outside

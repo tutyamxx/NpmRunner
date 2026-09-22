@@ -3,6 +3,9 @@ import globals from 'globals';
 import reactPlugin from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
+import preferArrowFunctions from 'eslint-plugin-prefer-arrow-functions';
+import stylistic from '@stylistic/eslint-plugin';
+import jsdoc from 'eslint-plugin-jsdoc';
 import { defineConfig, globalIgnores } from 'eslint/config';
 
 export default defineConfig([
@@ -10,7 +13,10 @@ export default defineConfig([
     {
         files: ['**/*.{js,jsx}'],
         plugins: {
-            react: reactPlugin
+            react: reactPlugin,
+            '@stylistic': stylistic,
+            jsdoc,
+            'prefer-arrow-functions': preferArrowFunctions
         },
         extends: [
             js.configs.recommended,
@@ -41,15 +47,14 @@ export default defineConfig([
             'react/react-in-jsx-scope': 'off',
             'react/jsx-uses-react': 'off',
             'react/jsx-uses-vars': 'error',
-
-            'arrow-spacing': 'error',
-            'array-bracket-spacing': ['error', 'never'],
+            'arrow-spacing': ['error', { before: true, after: true }],
             'arrow-body-style': ['error', 'as-needed'],
+            'array-bracket-spacing': ['error', 'never'],
             'space-in-parens': ['error', 'never'],
             'brace-style': ['error', '1tbs'],
             'block-scoped-var': 'error',
-            indent: ['error', 4, { SwitchCase: 1 }],
-            camelcase: ['error', {
+            'indent': ['error', 4, { SwitchCase: 1 }],
+            'camelcase': ['error', {
                 properties: 'never',
                 ignoreDestructuring: false,
                 ignoreImports: true,
@@ -61,10 +66,10 @@ export default defineConfig([
             'default-case': 'error',
             'default-case-last': 'error',
             'no-duplicate-case': 'error',
-            'default-param-last': ['error'],
+            'default-param-last': 'error',
             'dot-location': ['error', 'property'],
-            quotes: ['error', 'single'],
-            semi: ['error', 'always'],
+            'quotes': ['error', 'single'],
+            'semi': ['error', 'always'],
             'linebreak-style': ['error', 'unix'],
             'no-unused-vars': ['error', { vars: 'all', args: 'after-used', ignoreRestSiblings: false }],
             'no-multiple-empty-lines': ['error', { max: 1, maxBOF: 0, maxEOF: 0 }],
@@ -175,14 +180,32 @@ export default defineConfig([
             'prefer-regex-literals': ['error', { disallowRedundantWrapping: true }],
             'space-infix-ops': 'error',
             'func-name-matching': 'error',
-            radix: ['error', 'as-needed'],
-            eqeqeq: ['error', 'smart'],
+            'radix': ['error', 'as-needed'],
+            'eqeqeq': ['error', 'smart'],
             'unicode-bom': ['error', 'never'],
             'wrap-iife': 'error',
             'eol-last': ['error', 'always'],
             'vars-on-top': 'error',
-            yoda: ['error', 'never', { exceptRange: true }],
-            'yield-star-spacing': ['error', 'before']
+            'yoda': ['error', 'never', { exceptRange: true }],
+            'yield-star-spacing': ['error', 'before'],
+            '@stylistic/spaced-comment': ['error', 'always'],
+            '@stylistic/padded-blocks': ['error', 'never'],
+            '@stylistic/indent': ['error', 4],
+            'prefer-arrow-functions/prefer-arrow-functions': [
+                'error',
+                {
+                    allowedNames: [],
+                    allowNamedFunctions: false,
+                    allowObjectProperties: false,
+                    classPropertiesAllowed: false,
+                    disallowPrototype: false,
+                    returnStyle: 'unchanged',
+                    singleReturnOnly: false
+                }
+            ],
+            'jsdoc/check-alignment': 'error',
+            'jsdoc/check-indentation': 'error',
+            'jsdoc/check-line-alignment': ['error', 'always']
         }
     }
 ]);

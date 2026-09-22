@@ -3,9 +3,9 @@ self.MonacoEnvironment = {
     /**
      * Returns the appropriate Worker instance for a given language label.
      *
-     * @param {string} moduleId - Module identifier
-     * @param {string} label - Language label, e.g., 'javascript', 'typescript'
-     * @returns {Worker} A web worker instance
+     * @param   {string} moduleId - Module identifier
+     * @param   {string} label    - Language label, e.g., 'javascript', 'typescript'
+     * @returns {Worker}          A web worker instance
      */
     getWorker: (_moduleId, label) => {
         // --| Determine the worker script based on language

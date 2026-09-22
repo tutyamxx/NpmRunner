@@ -5,8 +5,8 @@
  * - git+https://github.com/user/repo.git -> user/repo
  * - https://github.com/user/repo -> user/repo
  *
- * @param {string} repoUrl - The full repository URL
- * @returns {string|null} The GitHub "user/repo" string, or null if repoUrl is falsy
+ * @param   {string}      repoUrl - The full repository URL
+ * @returns {string|null}         The GitHub "user/repo" string, or null if repoUrl is falsy
  */
 export const getGithubRepo = (repoUrl) => {
     if (!repoUrl) {
@@ -29,9 +29,9 @@ export const getGithubRepo = (repoUrl) => {
  * - "https://github.com/user/repo/blob/main/file.js" -> https://raw.githubusercontent.com/user/repo/main/file.js
  * - "https://example.com/file.js" -> unchanged
  *
- * @param {string} url - The original URL (relative, blob, or absolute)
- * @param {string} repo - The GitHub repo in any format (e.g., git+https://github.com/user/repo.git)
- * @returns {string} The fixed URL suitable for direct browser access
+ * @param   {string} url  - The original URL (relative, blob, or absolute)
+ * @param   {string} repo - The GitHub repo in any format (e.g., git+https://github.com/user/repo.git)
+ * @returns {string}      The fixed URL suitable for direct browser access
  */
 export const fixGithubUrl = (url, repo) => {
     if (!url) {

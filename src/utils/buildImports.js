@@ -50,6 +50,7 @@ const buildDeclarations = (specifier, ref) => {
     const named = specifier.match(/\{([^}]*)\}/)?.[1]?.trim();
     const head = specifier.replace(/\{[^}]*\}/, '').replace(/^\s*,|,\s*$/g, '').trim();
     const namespace = head.match(/^\*\s+as\s+([A-Za-z_$][\w$]*)$/)?.[1];
+
     const lines = [];
 
     if (namespace) {

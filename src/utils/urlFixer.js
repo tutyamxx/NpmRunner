@@ -13,7 +13,7 @@ export const getGithubRepo = (repoUrl) => {
         return null;
     }
 
-    return repoUrl?.replace(/^git\+/, '')?.replace(/\.git$/, '')?.replace('https://github.com/', '');
+    return repoUrl.replace(/^git\+/, '').replace(/\.git$/, '').replace('https://github.com/', '');
 };
 
 /**
@@ -38,29 +38,15 @@ export const fixGithubUrl = (url, repo) => {
         return url;
     }
 
-    // --| Normalize repository URL (git+https://github.com/user/repo.git -> user/repo)
     const normalizedRepo = getGithubRepo(repo);
 
-    const isAbsolute = /^https?:\/\//.test(url);
-    const isGithub = url?.includes('github.com');
-
-    // --| Already absolute and not GitHub blob
-    if (isAbsolute && !isGithub) {
-        return url;
+    if (/^https?:\/\//.test(url)) {
+        return url.includes('/blob/')
+            ? url.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/')
+            : url;
     }
 
-    // --| Convert GitHub blob -> raw
-    if (isGithub && url?.includes('/blob/')) {
-        return url?.replace?.('github.com', 'raw.githubusercontent.com')?.replace?.('/blob/', '/');
-    }
-
-    // --| Convert relative paths (consolelog.png, ./img/test.png, etc.)
-    if (!isAbsolute && normalizedRepo) {
-        const clean = url?.replace(/^\.?\//, '');
-
-        // --| Use main branch by default (GitHub standard)
-        return `https://raw.githubusercontent.com/${normalizedRepo}/main/${clean}`;
-    }
-
-    return url;
+    return normalizedRepo
+        ? `https://raw.githubusercontent.com/${normalizedRepo}/main/${url.replace(/^\.?\//, '')}`
+        : url;
 };

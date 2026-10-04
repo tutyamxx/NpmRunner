@@ -1,6 +1,31 @@
 import Editor from '@monaco-editor/react';
 import PropTypes from 'prop-types';
 
+// --| Default editor options for all instances of the Monaco Editor
+const EDITOR_OPTIONS = {
+    automaticLayout: true,
+    contextmenu: false,
+    minimap: { enabled: false },
+    fontSize: 14,
+    scrollBeyondLastLine: false,
+    lineNumbers: 'on',
+    wordWrap: 'on',
+    wrappingIndent: 'indent',
+    occurrencesHighlight: true,
+    useShadows: true,
+    quickSuggestions: { other: true, comments: false, strings: true },
+    quickSuggestionsDelay: 100,
+    suggestOnTriggerCharacters: true,
+    acceptSuggestionOnEnter: 'smart',
+    tabCompletion: 'on',
+    wordBasedSuggestions: true,
+    parameterHints: true,
+    snippetSuggestions: 'inline'
+};
+
+// --| Wrapper props for the Monaco Editor component
+const WRAPPER_PROPS = { 'data-testid': 'monaco-editor' };
+
 /**
  * Reusable Monaco Editor component for sandboxed code editing
  *
@@ -11,54 +36,17 @@ import PropTypes from 'prop-types';
  * - onEditorMount: optional callback to get editor instance
  */
 const CodeEditor = ({ code, setCode, theme = 'dark', onEditorMount }) => (
-    <div className="runner-editor">
-        <Editor
-            data-testid="monaco-editor"
-            height="100%"
-            defaultLanguage='javascript'
-            language='javascript'
-            theme={theme === 'dark' ? 'vs-dark' : 'vs'}
-            value={code ?? ''}
-            onChange={(value) => setCode(value ?? '')}
-            onContextMenu={(e) => e?.preventDefault()}
-            onMount={(editor, monaco) => {
-                try {
-                    if (onEditorMount) {
-                        onEditorMount(editor, monaco);
-                    }
-
-                    monaco.editor.setTheme(theme === 'dark' ? 'vs-dark' : 'vs');
-                    editor.layout();
-                    editor.updateOptions({ contextmenu: false });
-                } catch (error) {
-                    if (import.meta.env.DEV) {
-                        // eslint-disable-next-line no-console
-                        console.error(error);
-                    }
-                }
-            }}
-            options={{
-                automaticLayout: true,
-                contextmenu: false,
-                minimap: { enabled: false },
-                fontSize: 14,
-                scrollBeyondLastLine: false,
-                lineNumbers: 'on',
-                wordWrap: 'on',
-                wrappingIndent: 'indent',
-                occurrencesHighlight: true,
-                useShadows: true,
-                quickSuggestions: { other: true, comments: false, strings: true },
-                quickSuggestionsDelay: 100,
-                suggestOnTriggerCharacters: true,
-                acceptSuggestionOnEnter: 'smart',
-                tabCompletion: 'on',
-                wordBasedSuggestions: true,
-                parameterHints: true,
-                snippetSuggestions: 'inline'
-            }}
-        />
-    </div>
+    <Editor
+        wrapperProps={WRAPPER_PROPS}
+        height="100%"
+        language="javascript"
+        theme={theme === 'dark' ? 'vs-dark' : 'vs'}
+        value={code ?? ''}
+        loading={null}
+        options={EDITOR_OPTIONS}
+        onChange={(value) => setCode(value ?? '')}
+        onMount={onEditorMount}
+    />
 );
 
 CodeEditor.propTypes = {

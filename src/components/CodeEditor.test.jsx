@@ -5,7 +5,7 @@ import CodeEditor from './CodeEditor';
 // --| Mock monaco-editor-react to avoid loading real editor
 vi.mock('@monaco-editor/react', () => ({
     __esModule: true,
-    default: ({ onMount, value, onChange, onContextMenu }) => {
+    default: ({ onMount, value, onChange, theme, options }) => {
         const fakeEditor = { layout: vi.fn(), focus: vi.fn(), updateOptions: vi.fn() };
         const fakeMonaco = { editor: { setTheme: vi.fn() } };
 
@@ -16,34 +16,31 @@ vi.mock('@monaco-editor/react', () => ({
                 defaultValue={value}
                 readOnly
                 data-testid="monaco-editor-mock"
+                data-theme={theme}
+                data-options={JSON.stringify(options)}
                 onChange={(e) => onChange?.(e.target.value)}
-                onContextMenu={(e) => onContextMenu?.(e)}
             />
         );
     }
 }));
 
+const setup = (props = {}) => {
+    const setCode = vi.fn();
+    const utils = render(<CodeEditor code="" setCode={setCode} {...props} />);
+
+    return { setCode, textarea: utils.getByTestId('monaco-editor-mock'), ...utils };
+};
+
 describe('🏖️ Code Editor', () => {
     it('Renders correctly with given code', () => {
-        const code = 'console.log("hello")';
-        const setCode = vi.fn();
+        const { textarea } = setup({ code: 'console.log("hello")', theme: 'dark' });
 
-        render(<CodeEditor code={code} setCode={setCode} theme="dark" />);
+        expect(textarea.defaultValue).toBe('console.log("hello")');
     });
 
     it('Calls onEditorMount when mounted', () => {
-        const code = '';
-        const setCode = vi.fn();
         const onEditorMount = vi.fn();
-
-        render(
-            <CodeEditor
-                code={code}
-                setCode={setCode}
-                theme="light"
-                onEditorMount={onEditorMount}
-            />
-        );
+        setup({ theme: 'light', onEditorMount });
 
         expect(onEditorMount).toHaveBeenCalled();
         const [editor, monaco] = onEditorMount.mock.calls[0];
@@ -51,139 +48,54 @@ describe('🏖️ Code Editor', () => {
         expect(monaco.editor.setTheme).toBeInstanceOf(Function);
     });
 
-    it('Resolves correct Monaco theme for light and dark', () => {
-        const code = '';
-        const setCode = vi.fn();
-        const onEditorMount = vi.fn();
+    it.each([
+        ['light', 'vs'],
+        ['dark', 'vs-dark']
+    ])('Resolves correct Monaco theme for %s', (theme, monacoTheme) => {
+        const { textarea } = setup({ theme });
 
-        render(<CodeEditor code={code} setCode={setCode} theme="light" onEditorMount={onEditorMount} />);
-        let [, monaco] = onEditorMount.mock.calls[0];
-        expect(monaco.editor.setTheme).toHaveBeenCalledWith('vs');
-
-        render(<CodeEditor code={code} setCode={setCode} theme="dark" onEditorMount={onEditorMount} />);
-        [, monaco] = onEditorMount.mock.calls[1];
-        expect(monaco.editor.setTheme).toHaveBeenCalledWith('vs-dark');
-    });
-
-    it('Calls editor.layout and editor.focus on mount', () => {
-        const code = '';
-        const setCode = vi.fn();
-        const onEditorMount = vi.fn();
-
-        render(<CodeEditor code={code} setCode={setCode} theme="dark" onEditorMount={onEditorMount} />);
-        const [editor] = onEditorMount.mock.calls[0];
-        expect(editor.layout).toHaveBeenCalled();
+        expect(textarea.dataset.theme).toBe(monacoTheme);
     });
 
     it('Defaults to dark theme if no theme provided', () => {
-        const code = '';
-        const setCode = vi.fn();
-        const onEditorMount = vi.fn();
+        const { textarea } = setup();
 
-        render(<CodeEditor code={code} setCode={setCode} onEditorMount={onEditorMount} />);
-        const [, monaco] = onEditorMount.mock.calls[0];
-
-        expect(monaco.editor.setTheme).toHaveBeenCalledWith('vs-dark');
+        expect(textarea.dataset.theme).toBe('vs-dark');
     });
 
-    it('Disables editor context menu via updateOptions', () => {
-        const code = '';
-        const setCode = vi.fn();
-        const onEditorMount = vi.fn();
+    it('Disables editor context menu and enables automatic layout via options', () => {
+        const { textarea } = setup();
+        const options = JSON.parse(textarea.dataset.options);
 
-        render(<CodeEditor code={code} setCode={setCode} theme="dark" onEditorMount={onEditorMount} />);
-        const [editor] = onEditorMount.mock.calls[0];
-
-        expect(editor.updateOptions).toHaveBeenCalledWith({ contextmenu: false });
+        expect(options.contextmenu).toBe(false);
+        expect(options.automaticLayout).toBe(true);
     });
 
-    it('Renders empty string if code prop is null or undefined', () => {
-        const setCode = vi.fn();
-
-        render(<CodeEditor code={null} setCode={setCode} />);
-        const textarea = document.querySelector('textarea');
-        expect(textarea.value).toBe('');
-    });
-
-    it('Does not crash if onEditorMount is not provided', () => {
-        const setCode = vi.fn();
-
-        expect(() => render(<CodeEditor code="test" setCode={setCode} theme="dark" />)).not.toThrow();
-    });
-
-    it('Updates Monaco theme when theme prop changes', () => {
-        const setCode = vi.fn();
-        const onEditorMount = vi.fn();
-
-        const { rerender } = render(<CodeEditor code="" setCode={setCode} theme="light" onEditorMount={onEditorMount} />);
-
-        let [, monaco] = onEditorMount.mock.calls[0];
-        expect(monaco.editor.setTheme).toHaveBeenCalledWith('vs');
-
-        rerender(<CodeEditor code="" setCode={setCode} theme="dark" onEditorMount={onEditorMount} />);
-
-        [, monaco] = onEditorMount.mock.calls[1];
-        expect(monaco.editor.setTheme).toHaveBeenCalledWith('vs-dark');
-    });
-
-    it('Does not call editor.layout again on re-render', () => {
-        const setCode = vi.fn();
-        const onEditorMount = vi.fn();
-
-        const { rerender } = render(<CodeEditor code="" setCode={setCode} theme="dark" onEditorMount={onEditorMount} />);
-
-        const [editor] = onEditorMount.mock.calls[0];
-        expect(editor.layout).toHaveBeenCalledTimes(1);
-
-        rerender(<CodeEditor code="new" setCode={setCode} theme="dark" onEditorMount={onEditorMount} />);
-
-        expect(editor.layout).toHaveBeenCalledTimes(1);
-    });
-
-    it('Disables context menu only once on mount', () => {
-        const setCode = vi.fn();
-        const onEditorMount = vi.fn();
-
-        const { rerender } = render(<CodeEditor code="" setCode={setCode} theme="dark" onEditorMount={onEditorMount} />);
-
-        const [editor] = onEditorMount.mock.calls[0];
-        expect(editor.updateOptions).toHaveBeenCalledTimes(1);
-
-        rerender(<CodeEditor code="abc" setCode={setCode} theme="dark" onEditorMount={onEditorMount} />);
-
-        expect(editor.updateOptions).toHaveBeenCalledTimes(1);
-    });
-
-    it('Passes empty string to editor when code is null', () => {
-        const setCode = vi.fn();
-
-        render(<CodeEditor code={null} setCode={setCode} />);
-        const textarea = document.querySelector('textarea');
-
+    // eslint-disable-next-line no-undefined
+    it.each([null, undefined])('Renders empty string if code prop is %s', (code) => {
+        const { textarea } = setup({ code });
         expect(textarea.defaultValue).toBe('');
     });
 
-    it('Calls onChange and updates code correctly', () => {
-        const setCode = vi.fn();
+    it('Does not crash if onEditorMount is not provided', () => {
+        expect(() => setup({ code: 'test', theme: 'dark' })).not.toThrow();
+    });
 
-        const { getByTestId } = render(<CodeEditor code="" setCode={setCode} />);
-        const textarea = getByTestId('monaco-editor-mock');
+    it('Updates Monaco theme when theme prop changes', () => {
+        const { rerender, getByTestId, setCode } = setup({ theme: 'light' });
+        expect(getByTestId('monaco-editor-mock').dataset.theme).toBe('vs');
+
+        rerender(<CodeEditor code="" setCode={setCode} theme="dark" />);
+        expect(getByTestId('monaco-editor-mock').dataset.theme).toBe('vs-dark');
+    });
+
+    it('Calls onChange and updates code correctly', () => {
+        const { setCode, textarea } = setup();
 
         fireEvent.change(textarea, { target: { value: 'new code' } });
         expect(setCode).toHaveBeenCalledWith('new code');
 
         fireEvent.change(textarea, { target: { value: null } });
         expect(setCode).toHaveBeenCalledWith('');
-    });
-
-    it('Calls setCode when onChange is triggered', () => {
-        const setCode = vi.fn();
-        const { getByTestId } = render(<CodeEditor code="" setCode={setCode} />);
-
-        const textarea = getByTestId('monaco-editor-mock');
-
-        // --| Simulate typing
-        fireEvent.change(textarea, { target: { value: 'new code' } });
-        expect(setCode).toHaveBeenCalledWith('new code');
     });
 });

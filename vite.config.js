@@ -15,6 +15,7 @@ export default defineConfig({
         globals: true,
         provider: 'istanbul',
         environment: 'jsdom',
+        isolate: false,
         setupFiles: './src/setupTests.js',
         include: ['**/*.{test,spec}.{js,ts,jsx,tsx}'],
         exclude: ['node_modules/', 'test/'],
